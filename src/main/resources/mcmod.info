@@ -1,0 +1,16 @@
+[
+{
+  "modid": "trident",
+  "name": "Trident",
+  "description": "This mod adds a trident.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/jiGGO1/Trident",
+  "updateUrl": "",
+  "authorList": ["jiGGO", "ji_GGO"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

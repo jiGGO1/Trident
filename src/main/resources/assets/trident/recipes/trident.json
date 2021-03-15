@@ -1,0 +1,19 @@
+{
+  "result": {
+    "item": "trident:trident"
+  },
+  "pattern": [
+    " QQ",
+    " PQ",
+    "P  "
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "Q": {
+      "item": "minecraft:quartz"
+    },
+    "P": {
+      "item": "minecraft:prismarine_shard"
+    }
+  }
+}

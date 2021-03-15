@@ -1,0 +1,23 @@
+item.minecraft.trident.name=三叉戟
+
+entity.minecraft.trident=三叉戟
+
+enchantment.minecraft.loyalty=忠誠
+enchantment.minecraft.impaling=魚叉
+enchantment.minecraft.riptide=波濤
+enchantment.minecraft.channeling=喚雷
+
+subtitles.item.trident.hit=三叉戟突刺
+subtitles.item.trident.hit_ground=三叉戟振動
+subtitles.item.trident.return=三叉戟返回
+subtitles.item.trident.riptide=三叉戟突進
+subtitles.item.trident.throw=三叉戟鏗鏘聲
+subtitles.item.trident.thunder=三叉戟雷聲劈啪
+
+death.attack.trident=%1$s 被 %2$s 刺穿了
+death.attack.trident.item=%1$s 被 %2$s 用 %3$s 刺穿了
+
+advancements.adventure.throw_trident.description=將三叉戟擲向任何物品。注意：拋棄你僅有的武器並不是個好主意。
+advancements.adventure.throw_trident.title=免洗笑話
+advancements.adventure.very_very_frightening.description=以閃電制裁村民
+advancements.adventure.very_very_frightening.title=非常驚世駭俗
