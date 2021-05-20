@@ -67,7 +67,6 @@ public class CapabilityTrident {
 
     public static class ProvidePlayer implements ICapabilitySerializable<NBTTagCompound>, ICapabilityProvider {
 
-        @CapabilityInject(ISpinAttackDuration.class)
         private ISpinAttackDuration trident = new Implementation();
 
         private Capability.IStorage<ISpinAttackDuration> storage = CapabilityHandler.capability.getStorage();

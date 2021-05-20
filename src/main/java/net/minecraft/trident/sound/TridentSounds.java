@@ -8,7 +8,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author ji_GGO
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 @Mod.EventBusSubscriber(modid = Trident.MODID)
 public class TridentSounds {
 
-    public static final ArrayList<SoundEvent> SOUNDS = Lists.newArrayList();
+    public static final List<SoundEvent> SOUNDS = Lists.newArrayList();
 
     public static final SoundEvent ITEM_TRIDENT_HIT = register("item.trident.hit");
     public static final SoundEvent ITEM_TRIDENT_HIT_GROUND = register("item.trident.hit_ground");

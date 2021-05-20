@@ -21,3 +21,8 @@ advancements.adventure.throw_trident.description=Throw a trident at something. N
 advancements.adventure.throw_trident.title=A Throwaway Joke
 advancements.adventure.very_very_frightening.description=Strike a Villager with lightning
 advancements.adventure.very_very_frightening.title=Very Very Frightening
+
+config.trident.general.zombie_drop=Zombie Drop Trident
+config.trident.general.trident_zombie=Spawn Trident Zombie
+config.trident.general.trident_drop=Spawn Trident Probability
+config.trident.general.trident_recipe=Trident Crafting

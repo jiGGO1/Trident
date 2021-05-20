@@ -11,7 +11,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 public class CapabilityHandler {
 
     @CapabilityInject(ISpinAttackDuration.class)
-    public  static Capability<ISpinAttackDuration> capability;
+    public static Capability<ISpinAttackDuration> capability;
 
     public static void setupCapabilities(){
         CapabilityManager.INSTANCE.register(ISpinAttackDuration.class, new CapabilityTrident.Storage(), CapabilityTrident.Implementation.class);

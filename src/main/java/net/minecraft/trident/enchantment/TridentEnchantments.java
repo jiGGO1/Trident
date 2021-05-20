@@ -14,7 +14,7 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author ji_GGO
@@ -26,7 +26,7 @@ public class TridentEnchantments {
     public static final EnumEnchantmentType TRIDENT = EnumHelper.addEnchantmentType("TRIDENT",
             (item -> item instanceof ItemTrident));
 
-    public static final ArrayList<Enchantment> ENCHANTMENTS = Lists.newArrayList();
+    public static final List<Enchantment> ENCHANTMENTS = Lists.newArrayList();
 
     public static final Enchantment LOYALTY;
     public static final Enchantment IMPALING;

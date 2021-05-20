@@ -21,3 +21,8 @@ advancements.adventure.throw_trident.description=往什么东西扔出三叉戟�
 advancements.adventure.throw_trident.title=抖包袱
 advancements.adventure.very_very_frightening.description=雷击一名村民
 advancements.adventure.very_very_frightening.title=魔女审判
+
+config.trident.general.zombie_drop=僵尸掉落三叉戟
+config.trident.general.trident_zombie=生成三叉戟僵尸
+config.trident.general.trident_drop=生成三叉戟概率
+config.trident.general.trident_recipe=三叉戟合成配方

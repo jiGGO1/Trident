@@ -22,6 +22,7 @@ import net.minecraft.trident.capabilities.CapabilityHandler;
 import net.minecraft.trident.capabilities.CapabilityTrident;
 import net.minecraft.trident.capabilities.ISpinAttackDuration;
 import net.minecraft.trident.common.CommonProxy;
+import net.minecraft.trident.config.TridentConfig;
 import net.minecraft.trident.enchantment.TridentEnchantments;
 import net.minecraft.trident.entity.EntityTrident;
 import net.minecraft.trident.item.ItemTrident;
@@ -65,12 +66,13 @@ import java.util.Random;
  * @author ji_GGO
  * @date 2020/02/27
  */
-@Mod(modid = Trident.MODID, name = Trident.NAME, version = Trident.VERSION)
+@Mod(modid = Trident.MODID, name = Trident.NAME, version = Trident.VERSION,
+    guiFactory = "net.minecraft.trident.config.TridentConfigFactory")
 public class Trident {
 
     public static final String MODID = "trident";
     public static final String NAME = "Trident Mod";
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.0.1";
 
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
@@ -94,7 +96,7 @@ public class Trident {
     }
 
     @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(final FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(Trident.class);
         MinecraftForge.EVENT_BUS.register(this);
         CapabilityHandler.setupCapabilities();
@@ -103,7 +105,7 @@ public class Trident {
     }
 
     @EventHandler
-    public void init(FMLInitializationEvent event) {
+    public void init(final FMLInitializationEvent event) {
         CreativeTabs combat = CreativeTabs.COMBAT;
         ArrayList<EnumEnchantmentType> types = Lists.newArrayList(combat.getRelevantEnchantmentTypes());
         types.add(TridentEnchantments.TRIDENT);
@@ -112,7 +114,7 @@ public class Trident {
     }
 
     @EventHandler
-    public void postInit(FMLPostInitializationEvent event){
+    public void postInit(final FMLPostInitializationEvent event){
         proxy.postInit(event);
     }
 
@@ -135,7 +137,7 @@ public class Trident {
     }
 
     @SubscribeEvent
-    public static void onRegisterEntities(RegistryEvent.Register<EntityEntry> event) {
+    public static void onRegisterEntities(final RegistryEvent.Register<EntityEntry> event) {
         event.getRegistry().register(EntityEntryBuilder.create()
                 .entity(EntityTrident.class)
                 .id(new ResourceLocation(MODID, "trident"), 1)
@@ -145,7 +147,7 @@ public class Trident {
     }
 
     @SubscribeEvent
-    public void onAttachCapabilitiesEntity(AttachCapabilitiesEvent<Entity> event){
+    public void onAttachCapabilitiesEntity(final AttachCapabilitiesEvent<Entity> event){
         if(event.getObject() instanceof EntityPlayer){
             ICapabilitySerializable<NBTTagCompound> provider = new CapabilityTrident.ProvidePlayer();
             event.addCapability(new ResourceLocation(MODID + ":trident"), provider);
@@ -153,7 +155,7 @@ public class Trident {
     }
 
     @SubscribeEvent
-    public void onPlayerClone(PlayerEvent.Clone event){
+    public void onPlayerClone(final PlayerEvent.Clone event){
         Capability<ISpinAttackDuration> capability = CapabilityHandler.capability;
         Capability.IStorage<ISpinAttackDuration> storage = capability.getStorage();
         if(event.getOriginal().hasCapability(capability, null) && event.getEntityPlayer().hasCapability(capability, null)){
@@ -163,7 +165,7 @@ public class Trident {
     }
 
     @SubscribeEvent
-    public void onTridentDamage(LivingHurtEvent event){
+    public void onTridentDamage(final LivingHurtEvent event){
         EntityLivingBase entity = event.getEntityLiving();
         if (!(event.getSource().getImmediateSource() instanceof EntityLivingBase)) return;
         EntityLivingBase attacker = (EntityLivingBase)event.getSource().getImmediateSource();
@@ -178,15 +180,16 @@ public class Trident {
     }
 
     @SubscribeEvent
-    public void onZombieDrop(LivingDropsEvent event){
+    public void onZombieDrop(final LivingDropsEvent event){
         EntityLivingBase entity = event.getEntityLiving();
-        if (!entity.world.isRemote && entity.isWet()) {
+        if (TridentConfig.zombieDrop && !entity.world.isRemote && entity.isWet()) {
             if (entity instanceof EntityZombie) {
                 Random random = entity.getRNG();
                 ItemStack stack = null;
                 if (entity.getHeldItemMainhand().getItem() == TRIDENT) {
                     stack = entity.getHeldItemMainhand().copy();
-                } else if (entity.getHeldItemMainhand().isEmpty() && random.nextInt(100 + 1) <= 2){
+                } else if (entity.getHeldItemMainhand().isEmpty() &&
+                        random.nextInt(100 + 1) <= TridentConfig.tridentDrop){
                     stack = new ItemStack(TRIDENT);
                 }
                 if (stack != null) {
@@ -198,10 +201,10 @@ public class Trident {
     }
 
     @SubscribeEvent
-    public void onZombieSpawn(LivingSpawnEvent event){
+    public void onZombieSpawn(final LivingSpawnEvent event){
         World world = event.getWorld();
         EntityLivingBase entity = event.getEntityLiving();
-        if (!entity.world.isRemote && world.isThundering() || world.isRaining() && entity.isWet()) {
+        if (TridentConfig.tridentZombie && !entity.world.isRemote && world.isThundering() || world.isRaining() && entity.isWet()) {
             if (entity instanceof EntityZombie) {
                 boolean flag = EntityList.getKey(entity).toString().equals("minecraft:zombie");
                 if (flag && entity.getHeldItemMainhand().isEmpty()) {

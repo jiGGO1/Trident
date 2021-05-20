@@ -21,3 +21,8 @@ advancements.adventure.throw_trident.description=將三叉戟擲向任何物品�
 advancements.adventure.throw_trident.title=免洗笑話
 advancements.adventure.very_very_frightening.description=以閃電制裁村民
 advancements.adventure.very_very_frightening.title=非常驚世駭俗
+
+config.trident.general.zombie_drop=殭屍掉落三叉戟
+config.trident.general.trident_zombie=生成三叉戟殭屍
+config.trident.general.trident_drop=生成三叉戟概率
+config.trident.general.trident_recipe=三叉戟合成配方
