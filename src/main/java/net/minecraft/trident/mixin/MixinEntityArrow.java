@@ -51,7 +51,7 @@ public abstract class MixinEntityArrow extends Entity {
     }
 
     @Inject(method = "onUpdate()V", at = @At(value = "HEAD"), cancellable = true)
-    public void onTrident(CallbackInfo call) {
+    public void onTrident(CallbackInfo info) {
         if (((Object)this) instanceof EntityTrident) {
             EntityTrident trident = (EntityTrident)(Object)this;
             super.onUpdate();
@@ -152,7 +152,7 @@ public abstract class MixinEntityArrow extends Entity {
                 if (this.isInWater()) {
                     for (int i = 0; i < 4; ++i) {
                         float f3 = 0.25F;
-                        this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * 0.25D, this.posY - this.motionY * 0.25D, this.posZ - this.motionZ * 0.25D, this.motionX, this.motionY, this.motionZ);
+                        this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * f3, this.posY - this.motionY * f3, this.posZ - this.motionZ * f3, this.motionX, this.motionY, this.motionZ);
                     }
                     f1 = trident.getWaterDrag();
                 }
@@ -160,12 +160,12 @@ public abstract class MixinEntityArrow extends Entity {
                 this.motionY *= (double) f1;
                 this.motionZ *= (double) f1;
                 if (!this.hasNoGravity()) {
-                    this.motionY -= 0.05F;
+                    this.motionY -= f2;
                 }
                 this.setPosition(this.posX, this.posY, this.posZ);
                 this.doBlockCollisions();
             }
-            call.cancel();
+            info.cancel();
         }
     }
 

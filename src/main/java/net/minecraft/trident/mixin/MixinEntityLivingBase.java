@@ -33,7 +33,7 @@ public abstract class MixinEntityLivingBase extends Entity {
     }
 
     @Inject(method = "onLivingUpdate()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;collideWithNearbyEntities()V"))
-    public void livingTick(CallbackInfo call) {
+    public void livingTick(CallbackInfo info) {
         if ((Object)this instanceof EntityPlayer) {
             if (this.getSpinAttackDuration() > 0) {
                 this.setSpinAttackDuration(this.getSpinAttackDuration()-1);

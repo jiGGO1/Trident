@@ -26,3 +26,8 @@ config.trident.general.zombie_drop=殭屍掉落三叉戟
 config.trident.general.trident_zombie=生成三叉戟殭屍
 config.trident.general.trident_drop=生成三叉戟概率
 config.trident.general.trident_recipe=三叉戟合成配方
+
+enchantment.trident.loyalty.desc=使三叉戟於射出後自動返回。
+enchantment.trident.impaling.desc=增加攻擊玩家对水下生物的傷害。
+enchantment.trident.riptide.desc=使玩家能使用三叉戟突進，僅於雨中或水中有效。
+enchantment.trident.channeling.desc=使三叉戟能於暴風雨中召喚閃電電流。

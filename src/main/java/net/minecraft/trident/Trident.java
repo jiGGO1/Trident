@@ -25,6 +25,7 @@ import net.minecraft.trident.common.CommonProxy;
 import net.minecraft.trident.config.TridentConfig;
 import net.minecraft.trident.enchantment.TridentEnchantments;
 import net.minecraft.trident.entity.EntityTrident;
+import net.minecraft.trident.item.ITrident;
 import net.minecraft.trident.item.ItemTrident;
 import net.minecraft.trident.network.PacketSpinAttack;
 import net.minecraft.util.EnumHand;
@@ -58,7 +59,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -83,8 +84,10 @@ public class Trident {
     public static CommonProxy proxy;
 
     public static final Item TRIDENT;
-    public static final ResourceLocation GUI = new ResourceLocation(MODID, "trident_in_gui");
+    public static final ResourceLocation GUI = new ResourceLocation(MODID, "trident");
+    public static final ResourceLocation HAND = new ResourceLocation(MODID, "trident_in_hand");
     public static final ModelResourceLocation MODEL = new ModelResourceLocation(GUI, "inventory");
+    public static final ModelResourceLocation HAND_MODEL = new ModelResourceLocation(HAND, "inventory");
 
     public static final EnumAction SPEAR = EnumHelper.addAction("SPEAR");
 
@@ -107,9 +110,9 @@ public class Trident {
     @EventHandler
     public void init(final FMLInitializationEvent event) {
         CreativeTabs combat = CreativeTabs.COMBAT;
-        ArrayList<EnumEnchantmentType> types = Lists.newArrayList(combat.getRelevantEnchantmentTypes());
+        List<EnumEnchantmentType> types = Lists.newArrayList(combat.getRelevantEnchantmentTypes());
         types.add(TridentEnchantments.TRIDENT);
-        combat.setRelevantEnchantmentTypes(types.toArray(new EnumEnchantmentType[types.size()]));
+        combat.setRelevantEnchantmentTypes(types.toArray(new EnumEnchantmentType[0]));
         proxy.init(event);
     }
 
@@ -126,21 +129,17 @@ public class Trident {
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public static void onModelRegistry(final ModelRegistryEvent event) {
-        registerModel(TRIDENT);
-    }
-
-    @SideOnly(Side.CLIENT)
-    private static void registerModel(Item item) {
-        ModelLoader.registerItemVariants(item, item.getRegistryName(), GUI);
-        ModelResourceLocation modelResourceLocation = new ModelResourceLocation(item.getRegistryName(), "inventory");
-        ModelLoader.setCustomModelResourceLocation(item, 0, modelResourceLocation);
+        final Item trident = Trident.TRIDENT;
+        ModelLoader.registerItemVariants(trident, trident.getRegistryName(), HAND);
+        ModelResourceLocation model = new ModelResourceLocation(trident.getRegistryName(), "inventory");
+        ModelLoader.setCustomModelResourceLocation(trident, 0, model);
     }
 
     @SubscribeEvent
     public static void onRegisterEntities(final RegistryEvent.Register<EntityEntry> event) {
         event.getRegistry().register(EntityEntryBuilder.create()
                 .entity(EntityTrident.class)
-                .id(new ResourceLocation(MODID, "trident"), 1)
+                .id(new ResourceLocation(MODID, "trident"), 0)
                 .name("minecraft.trident")
                 .tracker(32, 1, true)
                 .build());
@@ -171,7 +170,7 @@ public class Trident {
         EntityLivingBase attacker = (EntityLivingBase)event.getSource().getImmediateSource();
         if (entity == null || attacker == null || !entity.isWet()) return;
         ItemStack stack = attacker.getHeldItemMainhand();
-        if (stack != null && !stack.isEmpty() && stack.getItem() instanceof ItemTrident) {
+        if (stack != null && !stack.isEmpty() && stack.getItem() instanceof ITrident) {
             int level = TridentEnchantments.getImpalingModifier(attacker);
             if (level > 0) {
                 event.setAmount(event.getAmount() + (float)level * 2.5F);
@@ -182,14 +181,14 @@ public class Trident {
     @SubscribeEvent
     public void onZombieDrop(final LivingDropsEvent event){
         EntityLivingBase entity = event.getEntityLiving();
-        if (TridentConfig.zombieDrop && !entity.world.isRemote && entity.isWet()) {
+        if (TridentConfig.ZOMBIE_DROP && !entity.world.isRemote && entity.isWet()) {
             if (entity instanceof EntityZombie) {
                 Random random = entity.getRNG();
                 ItemStack stack = null;
                 if (entity.getHeldItemMainhand().getItem() == TRIDENT) {
                     stack = entity.getHeldItemMainhand().copy();
                 } else if (entity.getHeldItemMainhand().isEmpty() &&
-                        random.nextInt(100 + 1) <= TridentConfig.tridentDrop){
+                        random.nextInt(100 + 1) <= TridentConfig.TRIDENT_DROP){
                     stack = new ItemStack(TRIDENT);
                 }
                 if (stack != null) {
@@ -204,7 +203,7 @@ public class Trident {
     public void onZombieSpawn(final LivingSpawnEvent event){
         World world = event.getWorld();
         EntityLivingBase entity = event.getEntityLiving();
-        if (TridentConfig.tridentZombie && !entity.world.isRemote && world.isThundering() || world.isRaining() && entity.isWet()) {
+        if (TridentConfig.TRIDENT_ZOMBIE && !entity.world.isRemote && world.isThundering() || world.isRaining() && entity.isWet()) {
             if (entity instanceof EntityZombie) {
                 boolean flag = EntityList.getKey(entity).toString().equals("minecraft:zombie");
                 if (flag && entity.getHeldItemMainhand().isEmpty()) {

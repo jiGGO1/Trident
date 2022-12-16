@@ -36,7 +36,7 @@ public class TridentSounds {
     }
 
     @SubscribeEvent
-    public static void onSoundEvenrRegistration(RegistryEvent.Register<SoundEvent> event) {
+    public static void onSoundEventRegistration(final RegistryEvent.Register<SoundEvent> event) {
         SOUNDS.forEach(sound -> event.getRegistry().register(sound));
     }
 

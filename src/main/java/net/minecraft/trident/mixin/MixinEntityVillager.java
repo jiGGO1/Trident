@@ -24,7 +24,7 @@ public abstract class MixinEntityVillager extends EntityAgeable {
 
     @Inject(method = "onStruckByLightning(Lnet/minecraft/entity/effect/EntityLightningBolt;)V",
             at = @At(value = "HEAD"))
-    public void trigger(EntityLightningBolt lightningBolt, CallbackInfo call){
+    public void trigger(EntityLightningBolt lightningBolt, CallbackInfo info){
         if (!this.world.isRemote && !this.isDead){
             if (Trident.LIGHTNING_BOLTS.containsKey(lightningBolt)) {
                 Trident.LIGHTNING_TRIGGER.trigger((EntityPlayerMP)Trident.LIGHTNING_BOLTS.get(lightningBolt));

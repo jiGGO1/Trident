@@ -4,12 +4,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.trident.Trident;
 import net.minecraft.trident.util.EntityHelper;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @author ji_GGO
  * @date 2021/03/04
  */
+@SideOnly(Side.CLIENT)
 @Mixin(ItemRenderer.class)
 public abstract class MixinItemRenderer {
 
@@ -30,7 +35,7 @@ public abstract class MixinItemRenderer {
 
     @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V",
             at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/item/ItemStack;getItemUseAction()Lnet/minecraft/item/EnumAction;"))
-    public void renderTrident(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo call){
+    public void renderTrident(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo info){
         if (stack.getItemUseAction() == Trident.SPEAR) {
             boolean flag = hand == EnumHand.MAIN_HAND;
             EnumHandSide enumhandside = flag ? player.getPrimaryHand() : player.getPrimaryHand().opposite();
@@ -58,24 +63,30 @@ public abstract class MixinItemRenderer {
     }
 
     @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;renderItemSide(Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemCameraTransforms$TransformType;Z)V"))
-    public void renderAttack(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo call) {
-        if (EntityHelper.isSpinAttacking(player)) {
+            at = @At(value = "HEAD"), cancellable = true)
+    public void renderAttack(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo info) {
+        if (EntityHelper.isSpinAttacking(player) && !(player.isHandActive() && player.getItemInUseCount() > 0 && player.getActiveHand() == hand)) {
+            GlStateManager.pushMatrix();
+
             boolean flag = hand == EnumHand.MAIN_HAND;
             EnumHandSide enumhandside = flag ? player.getPrimaryHand() : player.getPrimaryHand().opposite();
+            boolean flag1 = enumhandside == EnumHandSide.RIGHT;
             this.transformSideFirstPerson(enumhandside, equippedProgress);
-            int j = enumhandside == EnumHandSide.RIGHT ? 1 : -1;
-            //GlStateManager.translate((float) j * -0.4F, 0.8F, 0.3F);
-            //GlStateManager.rotate((float) j * 65.0F, 0.0F, 1.0F, 0.0F);
-            //GlStateManager.rotate((float) j * -85.0F, 0.0F, 0.0F, 1.0F);
-            GlStateManager.translate((float) j * 1.3F, 2.7F, -0.5F);
+            int j = flag1 ? 1 : -1;
+            GlStateManager.translate((float) j * -0.4F, 0.8F, 0.3F);
             GlStateManager.rotate((float) j * 65.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate((float) j * -85.0F, -0.0F, 0.0F, 1.0F);
-            GlStateManager.scale(2, 2, 2);
+            GlStateManager.rotate((float) j * -85.0F, 0.0F, 0.0F, 1.0F);
+
+            this.renderItemSide(player, stack, flag1 ? ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND : ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND, !flag1);
+            GlStateManager.popMatrix();
+            info.cancel();
         }
     }
 
     @Shadow
     abstract void transformSideFirstPerson(EnumHandSide hand, float equippedProgress);
+
+    @Shadow
+    abstract void renderItemSide(EntityLivingBase entity, ItemStack stack, ItemCameraTransforms.TransformType type, boolean leftHanded);
 
 }

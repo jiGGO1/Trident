@@ -2,6 +2,7 @@ package net.minecraft.trident.entity.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -9,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelTrident extends ModelBase {
 
-    public static final ResourceLocation TEXTURE_LOCATION = new ResourceLocation("textures/entity/trident.png");
+    public static final ResourceLocation TEXTURE = new ResourceLocation("textures/entity/trident.png");
     public final ModelRenderer modelRenderer;
 
     public ModelTrident() {
@@ -34,6 +35,11 @@ public class ModelTrident extends ModelBase {
 
     public void renderer() {
         this.modelRenderer.render(0.0625F);
+    }
+
+    @Override
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        this.modelRenderer.render(scale);
     }
 
 }

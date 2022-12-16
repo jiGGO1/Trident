@@ -8,7 +8,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.trident.Trident;
-import net.minecraft.trident.item.ItemTrident;
+import net.minecraft.trident.item.ITrident;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -24,7 +24,7 @@ import java.util.List;
 public class TridentEnchantments {
 
     public static final EnumEnchantmentType TRIDENT = EnumHelper.addEnchantmentType("TRIDENT",
-            (item -> item instanceof ItemTrident));
+            (item -> item instanceof ITrident));
 
     public static final List<Enchantment> ENCHANTMENTS = Lists.newArrayList();
 
@@ -46,7 +46,7 @@ public class TridentEnchantments {
     }
 
     public static Enchantment register(String key, Enchantment enchantment){
-        enchantment.setName("minecraft."+key);
+        enchantment.setName("minecraft." + key);
         enchantment.setRegistryName(Trident.MODID, key);
         ENCHANTMENTS.add(enchantment);
         return enchantment;

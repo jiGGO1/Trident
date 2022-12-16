@@ -15,6 +15,8 @@ import net.minecraft.trident.client.ClientProxy;
 import net.minecraft.trident.entity.renderer.LayerSpinAttackEffect;
 import net.minecraft.trident.util.EntityHelper;
 import net.minecraft.util.EnumHandSide;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,6 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
  * @author ji_GGO
  * @date 2021/03/05
  */
+@SideOnly(Side.CLIENT)
 @Mixin(RenderPlayer.class)
 public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientPlayer> {
 
@@ -39,14 +42,14 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
     }
 
     @Inject(method = "<init>(Lnet/minecraft/client/renderer/entity/RenderManager;Z)V", at = @At(value = "TAIL"))
-    public void init(RenderManager renderManager, boolean useSmallArms, CallbackInfo call){
+    public void init(RenderManager renderManager, boolean useSmallArms, CallbackInfo info){
         this.addLayer(new LayerSpinAttackEffect(this));
     }
 
     @Inject(method = "setModelVisibilities(Lnet/minecraft/client/entity/AbstractClientPlayer;)V",
             at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/item/ItemStack;getItemUseAction()Lnet/minecraft/item/EnumAction;"),
             locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void renderTridentMain(AbstractClientPlayer clientPlayer, CallbackInfo call, ModelPlayer modelplayer,
+    public void renderTridentMain(AbstractClientPlayer clientPlayer, CallbackInfo info, ModelPlayer modelplayer,
                                   ItemStack itemstack, ItemStack itemstack1,
                                   ModelBiped.ArmPose modelbiped$armpose, ModelBiped.ArmPose modelbiped$armpose1,
                                   EnumAction enumaction){
@@ -61,7 +64,7 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
 
     @Inject(method = "setModelVisibilities(Lnet/minecraft/client/entity/AbstractClientPlayer;)V",
             at = @At(value = "TAIL"))
-    public void renderTrident(AbstractClientPlayer clientPlayer, CallbackInfo call){
+    public void renderTrident(AbstractClientPlayer clientPlayer, CallbackInfo info){
         boolean flag = clientPlayer.getPrimaryHand() == EnumHandSide.RIGHT;
         ModelPlayer modelplayer = this.getMainModel();
         if (this.mainHand != null){

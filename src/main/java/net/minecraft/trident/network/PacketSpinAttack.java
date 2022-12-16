@@ -2,9 +2,7 @@ package net.minecraft.trident.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.trident.util.EntityHelper;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -25,7 +23,8 @@ public class PacketSpinAttack implements IMessage {
         this.type = type;
     }
 
-    public PacketSpinAttack() { }
+    public PacketSpinAttack() {
+    }
 
     @Override
     public void fromBytes(ByteBuf buf) {

@@ -1,8 +1,9 @@
-package net.minecraft.trident.item;
+package net.minecraft.trident.mixin;
 
+import com.github.alexthe666.iceandfire.item.ItemTideTrident;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -15,23 +16,29 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.trident.Trident;
 import net.minecraft.trident.enchantment.TridentEnchantments;
-import net.minecraft.trident.entity.EntityTrident;
+import net.minecraft.trident.iceandfire.EntityTideTrident;
+import net.minecraft.trident.iceandfire.IceAndFireInit;
+import net.minecraft.trident.iceandfire.RenderItemTideTrident;
+import net.minecraft.trident.item.ITrident;
 import net.minecraft.trident.sound.TridentSounds;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * @author ji_GGO
- * @date 2021/03/04
+ * @date 2022/11/26
  */
-public class ItemTrident extends Item implements ITrident {
+@Mixin(ItemTideTrident.class)
+public class MixinItemTideTrident extends Item implements ITrident {
 
-    public ItemTrident() {
-        this.setMaxDamage(250);
-        this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabs.COMBAT);
+    @Inject(method = "<init>", at = @At(value = "TAIL"))
+    private void init(CallbackInfo info) {
         this.addPropertyOverride(new ResourceLocation("throwing"), (stack, world, entity) -> {
             return entity != null && entity.isHandActive() && entity.getActiveItemStack() == stack ? 2.0F : 0.0F;
         });
@@ -42,20 +49,10 @@ public class ItemTrident extends Item implements ITrident {
         return !player.isCreative();
     }
 
-    @Override
-    public EnumAction getItemUseAction(ItemStack stack) {
-        return Trident.SPEAR;
-    }
-
-    @Override
-    public int getMaxItemUseDuration(ItemStack stack) {
-        return 72000;
-    }
-
-    @Override
-    public void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase entityLiving, int timeLeft) {
-        if (entityLiving instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) entityLiving;
+    @Inject(method = "onPlayerStoppedUsing", at = @At(value = "HEAD"), cancellable = true)
+    private void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase entity, int timeLeft, CallbackInfo info) {
+        if (entity instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) entity;
             int i = this.getMaxItemUseDuration(stack) - timeLeft;
             if (i >= 10) {
                 int j = TridentEnchantments.getRiptideModifier(stack);
@@ -63,7 +60,7 @@ public class ItemTrident extends Item implements ITrident {
                     if (!world.isRemote) {
                         stack.damageItem(1, player);
                         if (j == 0) {
-                            EntityTrident trident = new EntityTrident(world, player, stack);
+                            EntityTideTrident trident = new EntityTideTrident(world, player, stack);
                             trident.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 2.5F + (float) j * 0.5F, 1.0F);
                             if (player.isCreative()) {
                                 trident.pickupStatus = EntityArrow.PickupStatus.CREATIVE_ONLY;
@@ -90,7 +87,7 @@ public class ItemTrident extends Item implements ITrident {
                         this.startSpinAttack(player, 20);
                         if (player.onGround) {
                             float f6 = 1.1999999F;
-                            player.move(MoverType.SELF, 0.0D, (double) 1.1999999F, 0.0D);
+                            player.move(MoverType.SELF, 0.0D, (double) f6, 0.0D);
                         }
                         SoundEvent sound;
                         if (j >= 3) {
@@ -106,6 +103,12 @@ public class ItemTrident extends Item implements ITrident {
                 }
             }
         }
+        info.cancel();
+    }
+
+    @Override
+    public EnumAction getItemUseAction(ItemStack stack) {
+        return Trident.SPEAR;
     }
 
     @Override
@@ -140,8 +143,8 @@ public class ItemTrident extends Item implements ITrident {
         Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
 
         if (equipmentSlot == EntityEquipmentSlot.MAINHAND) {
-            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", (double)8.0D, 0));
-            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double)-2.9F, 0));
+            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 12.0D, 0));
+            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -2.9F, 0));
         }
 
         return multimap;
@@ -150,6 +153,21 @@ public class ItemTrident extends Item implements ITrident {
     @Override
     public int getItemEnchantability() {
         return 1;
+    }
+
+    @Override
+    public ModelResourceLocation getModel() {
+        return IceAndFireInit.MODEL;
+    }
+
+    @Override
+    public ModelResourceLocation getHandModel() {
+        return IceAndFireInit.HAND_MODEL;
+    }
+
+    @Override
+    public void render(ItemStack stack) {
+        RenderItemTideTrident.render(stack);
     }
 
 }

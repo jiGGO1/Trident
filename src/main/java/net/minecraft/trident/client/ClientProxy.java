@@ -1,11 +1,9 @@
 package net.minecraft.trident.client;
 
 import net.minecraft.client.model.ModelBiped;
-import net.minecraft.trident.Trident;
 import net.minecraft.trident.common.CommonProxy;
 import net.minecraft.trident.entity.EntityTrident;
-import net.minecraft.trident.entity.renderer.RendererTrident;
-import net.minecraft.trident.network.PacketSpinAttack;
+import net.minecraft.trident.entity.renderer.RenderTrident;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -26,7 +24,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit(FMLPreInitializationEvent event) {
         super.preInit(event);
-        RenderingRegistry.registerEntityRenderingHandler(EntityTrident.class, RendererTrident::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityTrident.class, RenderTrident::new);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class CommonProxy {
     }
 
     public void init(FMLInitializationEvent event) {
-        if (TridentConfig.tridentRecipe) {
+        if (TridentConfig.TRIDENT_RECIPE) {
             String name = Trident.MODID;
             ResourceLocation group = new ResourceLocation(name);
             GameRegistry.addShapedRecipe(new ResourceLocation(name, Trident.MODID), group,

@@ -26,3 +26,8 @@ config.trident.general.zombie_drop=Zombie Drop Trident
 config.trident.general.trident_zombie=Spawn Trident Zombie
 config.trident.general.trident_drop=Spawn Trident Probability
 config.trident.general.trident_recipe=Trident Crafting
+
+enchantment.trident.loyalty.desc=Allows the trident to automatically return after being thrown.
+enchantment.trident.impaling.desc=Increases damage to players and aquatic mobs.
+enchantment.trident.riptide.desc=Allows the trident to launch the player forwards. Only works while in rain or water.
+enchantment.trident.channeling.desc=Allows the trident to summon lightning bolts during thunderstorms.

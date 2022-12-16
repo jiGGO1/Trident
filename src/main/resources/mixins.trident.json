@@ -5,7 +5,8 @@
   "mixins": [
     "MixinEntityLivingBase",
     "MixinEntityArrow",
-    "MixinEntityVillager"
+    "MixinEntityVillager",
+    "MixinItemTideTrident"
   ],
   "client": [
     "MixinRenderItem",
@@ -13,7 +14,8 @@
     "MixinRenderPlayer",
     "MixinRenderLivingBase",
     "MixinModelBiped",
-    "MixinRenderEntityItem"
+    "MixinRenderEntityItem",
+    "MixinTileEntityItemStackRenderer"
   ],
   "server": [],
   "injectors": {

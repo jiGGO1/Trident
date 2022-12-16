@@ -34,7 +34,7 @@ public class EntityTrident extends EntityArrow {
     private static final DataParameter<Byte> LOYALTY_LEVEL = EntityDataManager.createKey(EntityTrident.class, DataSerializers.BYTE);
     private static final DataParameter<Boolean> EFFECT = EntityDataManager.createKey(EntityTrident.class, DataSerializers.BOOLEAN);
 
-    private ItemStack thrownStack = new ItemStack(Trident.TRIDENT);
+    protected ItemStack thrownStack = new ItemStack(Trident.TRIDENT);
     private boolean dealtDamage;
     public int returningTicks;
 
@@ -126,7 +126,7 @@ public class EntityTrident extends EntityArrow {
 
     protected void onHitEntity(RayTraceResult result) {
         Entity entity = result.entityHit;
-        float f = 8.0F;
+        float f = (float)this.getDamage();
         if (entity instanceof EntityLivingBase) {
             EntityLivingBase entitylivingbase = (EntityLivingBase)entity;
             f += EnchantmentHelper.getModifierForCreature(this.thrownStack, entitylivingbase.getCreatureAttribute());
@@ -260,6 +260,11 @@ public class EntityTrident extends EntityArrow {
 
     public boolean getNoClip(){
         return this.noClip;
+    }
+
+    @Override
+    public double getDamage() {
+        return 8.0f;
     }
 
 }
