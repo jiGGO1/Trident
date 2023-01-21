@@ -1,24 +1,25 @@
-package net.minecraft.trident.iceandfire;
+package net.minecraft.trident.compat.iceandfire;
 
 import com.github.alexthe666.iceandfire.client.model.ModelTideTrident;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.trident.entity.renderer.RenderModelEnchant;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author ji_GGO
  * @date 2022/12/02
  */
+@SideOnly(Side.CLIENT)
 public class RenderItemTideTrident {
 
     private static ModelTideTrident trident = new ModelTideTrident();
 
-    public static void render(ItemStack stack) {
+    public static void render(ItemStack stack, ItemCameraTransforms.TransformType type) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(RenderTideTrident.TEXTURE);
 
         GlStateManager.pushMatrix();
@@ -26,11 +27,8 @@ public class RenderItemTideTrident {
         GlStateManager.pushMatrix();
         GlStateManager.translate(0, 0.2F, -0.15F);
 
-        int person = Minecraft.getMinecraft().gameSettings.thirdPersonView;
         EntityPlayer player = Minecraft.getMinecraft().player;
-        GuiScreen screen = Minecraft.getMinecraft().currentScreen;
-        boolean play = !((screen instanceof GuiInventory) || screen instanceof GuiContainerCreative);
-        if (person == 0 && play) {
+        if (firstPerson(type)) {
             boolean flag = player != null && player.getHeldItemMainhand() == stack;
             GlStateManager.translate(flag ? 0.3F : -0.3F, 0.2F, -0.2F);
         } else {
@@ -44,6 +42,11 @@ public class RenderItemTideTrident {
         }
         GlStateManager.popMatrix();
         GlStateManager.popMatrix();
+    }
+
+    private static boolean firstPerson(ItemCameraTransforms.TransformType type) {
+        return type == ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND ||
+                type == ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND;
     }
 
 }

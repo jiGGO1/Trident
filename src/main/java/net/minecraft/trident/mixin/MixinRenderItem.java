@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.trident.entity.renderer.RenderItemTrident;
 import net.minecraft.trident.item.ITrident;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -91,8 +92,60 @@ public abstract class MixinRenderItem {
         }
     }
 
+    @Inject(method = "renderItemModel", at = @At(value = "HEAD"), cancellable = true)
+    private void renderTridentModel(ItemStack stack, IBakedModel bakedmodel, ItemCameraTransforms.TransformType type, boolean leftHanded, CallbackInfo info) {
+        if (!stack.isEmpty() && stack.getItem() instanceof ITrident) {
+            this.textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            this.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            GlStateManager.enableRescaleNormal();
+            GlStateManager.alphaFunc(516, 0.1F);
+            GlStateManager.enableBlend();
+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            GlStateManager.pushMatrix();
+            // TODO: check if negative scale is a thing
+            bakedmodel = ForgeHooksClient.handleCameraTransforms(bakedmodel, type, leftHanded);
+
+            this.renderTrident(stack, bakedmodel, type);
+            GlStateManager.cullFace(GlStateManager.CullFace.BACK);
+            GlStateManager.popMatrix();
+            GlStateManager.disableRescaleNormal();
+            GlStateManager.disableBlend();
+            this.textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            this.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
+            info.cancel();
+        }
+    }
+
+    private void renderTrident(ItemStack stack, IBakedModel model, ItemCameraTransforms.TransformType type) {
+        if (!stack.isEmpty()) {
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(-0.5F, -0.5F, -0.5F);
+
+            if (model.isBuiltInRenderer()) {
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.enableRescaleNormal();
+                RenderItemTrident.render(stack, type);
+            } else {
+                this.renderModel(model, stack);
+
+                if (stack.hasEffect()) {
+                    this.renderEffect(model);
+                }
+            }
+
+            GlStateManager.popMatrix();
+        }
+    }
+
     @Shadow
     public abstract void renderItem(ItemStack stack, IBakedModel model);
+
+    @Shadow
+    public abstract void renderModel(IBakedModel model, ItemStack stack);
+
+    @Shadow
+    public abstract void renderEffect(IBakedModel model);
 
     @Shadow
     abstract void setupGuiTransform(int xPosition, int yPosition, boolean isGui3d);

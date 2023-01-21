@@ -1,14 +1,14 @@
 package net.minecraft.trident.common;
 
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.trident.Trident;
-import net.minecraft.trident.config.TridentConfig;
+import net.minecraft.item.Item;
+import net.minecraft.trident.crafting.TridentRecipes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.oredict.OreDictionary;
 
 /**
  * @author ji_GGO
@@ -16,22 +16,26 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
  */
 public class CommonProxy {
 
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit(final FMLPreInitializationEvent event) {
 
     }
 
-    public void init(FMLInitializationEvent event) {
-        if (TridentConfig.TRIDENT_RECIPE) {
-            String name = Trident.MODID;
-            ResourceLocation group = new ResourceLocation(name);
-            GameRegistry.addShapedRecipe(new ResourceLocation(name, Trident.MODID), group,
-                    new ItemStack(Trident.TRIDENT), " QQ", " PQ", "P  ",
-                    'Q', Items.QUARTZ, 'P', Items.PRISMARINE_SHARD);
+    public void init(final FMLInitializationEvent event) {
+        registerOre("trident");
+        registerOre("futuremc");
+        registerOre("futureminecraf");
+        TridentRecipes.init();
+    }
+
+    public void postInit(final FMLPostInitializationEvent event) {
+
+    }
+
+    private static void registerOre(String modid) {
+        if (Loader.isModLoaded(modid)) {
+            Item trident = ForgeRegistries.ITEMS.getValue(new ResourceLocation(modid, "trident"));
+            OreDictionary.registerOre("trident", trident);
         }
-    }
-
-    public void postInit(FMLPostInitializationEvent event) {
-
     }
 
 }

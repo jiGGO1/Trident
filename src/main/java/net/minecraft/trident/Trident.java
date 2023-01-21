@@ -22,6 +22,7 @@ import net.minecraft.trident.capabilities.CapabilityHandler;
 import net.minecraft.trident.capabilities.CapabilityTrident;
 import net.minecraft.trident.capabilities.ISpinAttackDuration;
 import net.minecraft.trident.common.CommonProxy;
+import net.minecraft.trident.compat.weather.WeatherRiptide;
 import net.minecraft.trident.config.TridentConfig;
 import net.minecraft.trident.enchantment.TridentEnchantments;
 import net.minecraft.trident.entity.EntityTrident;
@@ -43,6 +44,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -62,6 +64,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Predicate;
 
 /**
  * @author ji_GGO
@@ -94,6 +97,8 @@ public class Trident {
     public static final LightningTrigger LIGHTNING_TRIGGER = CriteriaTriggers.register(new LightningTrigger());
     public static final Map<EntityLightningBolt, EntityPlayer> LIGHTNING_BOLTS = Maps.newHashMap();
 
+    public static Predicate<EntityPlayer> riptide = (player -> false);
+
     static {
         TRIDENT = new ItemTrident().setRegistryName(MODID, "trident").setUnlocalizedName("minecraft.trident");
     }
@@ -118,6 +123,9 @@ public class Trident {
 
     @EventHandler
     public void postInit(final FMLPostInitializationEvent event){
+        if (Loader.isModLoaded("weather2")) {
+            WeatherRiptide.init();
+        }
         proxy.postInit(event);
     }
 
@@ -217,6 +225,10 @@ public class Trident {
                 }
             }
         }
+    }
+
+    public static Predicate<EntityPlayer> getRiptide() {
+        return riptide;
     }
 
 }

@@ -1,4 +1,4 @@
-package net.minecraft.trident.iceandfire;
+package net.minecraft.trident.compat.iceandfire;
 
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;

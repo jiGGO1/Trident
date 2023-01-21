@@ -14,8 +14,7 @@
     "MixinRenderPlayer",
     "MixinRenderLivingBase",
     "MixinModelBiped",
-    "MixinRenderEntityItem",
-    "MixinTileEntityItemStackRenderer"
+    "MixinRenderEntityItem"
   ],
   "server": [],
   "injectors": {
