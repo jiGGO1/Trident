@@ -20,8 +20,8 @@ import java.util.List;
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends Entity {
 
-    public MixinEntityLivingBase(World worldIn) {
-        super(worldIn);
+    public MixinEntityLivingBase(World world) {
+        super(world);
     }
 
     public int getSpinAttackDuration() {
@@ -33,23 +33,23 @@ public abstract class MixinEntityLivingBase extends Entity {
     }
 
     @Inject(method = "onLivingUpdate()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;collideWithNearbyEntities()V"))
-    public void livingTick(CallbackInfo info) {
+    private void livingTick(CallbackInfo info) {
         if ((Object)this instanceof EntityPlayer) {
             if (this.getSpinAttackDuration() > 0) {
-                this.setSpinAttackDuration(this.getSpinAttackDuration()-1);
+                this.setSpinAttackDuration(this.getSpinAttackDuration() - 1);
                 this.updateSpinAttack(this.getEntityBoundingBox(), this.getEntityBoundingBox());
             }
         }
     }
 
-    protected void updateSpinAttack(AxisAlignedBB aabb1, AxisAlignedBB aabb2) {
-        AxisAlignedBB axisalignedbb = aabb1.union(aabb2);
-        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, axisalignedbb);
-        if (!list.isEmpty()) {
-            for(int i = 0; i < list.size(); ++i) {
-                Entity entity = list.get(i);
+    protected void updateSpinAttack(AxisAlignedBB before, AxisAlignedBB after) {
+        AxisAlignedBB box = before.union(after);
+        List<Entity> entities = this.world.getEntitiesWithinAABBExcludingEntity(this, box);
+        if (!entities.isEmpty()) {
+            for (int i = 0; i < entities.size(); ++i) {
+                Entity entity = entities.get(i);
                 if (entity instanceof EntityLivingBase) {
-                    this.spinAttack((EntityLivingBase)entity);
+                    this.spinAttack((EntityLivingBase) entity);
                     this.setSpinAttackDuration(0);
                     this.scale(-0.2D);
                     break;
@@ -73,9 +73,9 @@ public abstract class MixinEntityLivingBase extends Entity {
         EntityHelper.setLivingFlag((EntityPlayer)((Object)this), value);
     }
 
-    protected void spinAttack(EntityLivingBase entity) {
+    protected void spinAttack(EntityLivingBase target) {
         EntityPlayer player = (EntityPlayer)((Object)this);
-        player.attackTargetEntityWithCurrentItem(entity);
+        player.attackTargetEntityWithCurrentItem(target);
     }
 
 }

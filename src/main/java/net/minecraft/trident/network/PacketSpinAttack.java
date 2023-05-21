@@ -39,6 +39,7 @@ public class PacketSpinAttack implements IMessage {
     }
 
     public static class Handler implements IMessageHandler<PacketSpinAttack, IMessage> {
+
         @Override
         public IMessage onMessage(PacketSpinAttack message, MessageContext context) {
             if (context.side == Side.CLIENT) {
@@ -49,6 +50,7 @@ public class PacketSpinAttack implements IMessage {
             }
             return null;
         }
+
     }
 
 }

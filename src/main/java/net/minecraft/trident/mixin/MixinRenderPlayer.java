@@ -37,19 +37,19 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
 
     private ModelBiped.ArmPose offHand;
 
-    public MixinRenderPlayer(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn) {
-        super(renderManagerIn, modelBaseIn, shadowSizeIn);
+    public MixinRenderPlayer(RenderManager manager, ModelBase model, float shadowSize) {
+        super(manager, model, shadowSize);
     }
 
     @Inject(method = "<init>(Lnet/minecraft/client/renderer/entity/RenderManager;Z)V", at = @At(value = "TAIL"))
-    public void init(RenderManager renderManager, boolean useSmallArms, CallbackInfo info){
+    private void init(RenderManager manager, boolean useSmallArms, CallbackInfo info){
         this.addLayer(new LayerSpinAttackEffect(this));
     }
 
     @Inject(method = "setModelVisibilities(Lnet/minecraft/client/entity/AbstractClientPlayer;)V",
             at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/item/ItemStack;getItemUseAction()Lnet/minecraft/item/EnumAction;"),
             locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void renderTridentMain(AbstractClientPlayer clientPlayer, CallbackInfo info, ModelPlayer modelplayer,
+    private void renderTridentMain(AbstractClientPlayer clientPlayer, CallbackInfo info, ModelPlayer modelplayer,
                                   ItemStack itemstack, ItemStack itemstack1,
                                   ModelBiped.ArmPose modelbiped$armpose, ModelBiped.ArmPose modelbiped$armpose1,
                                   EnumAction enumaction){
@@ -64,7 +64,7 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
 
     @Inject(method = "setModelVisibilities(Lnet/minecraft/client/entity/AbstractClientPlayer;)V",
             at = @At(value = "TAIL"))
-    public void renderTrident(AbstractClientPlayer clientPlayer, CallbackInfo info){
+    private void renderTrident(AbstractClientPlayer clientPlayer, CallbackInfo info){
         boolean flag = clientPlayer.getPrimaryHand() == EnumHandSide.RIGHT;
         ModelPlayer modelplayer = this.getMainModel();
         if (this.mainHand != null){
@@ -86,7 +86,7 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
 
     @Redirect(method = "applyRotations(Lnet/minecraft/client/entity/AbstractClientPlayer;FFF)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;rotate(FFFF)V", opcode = 3))
-    public void redirectElytraFly(float angle, float x, float y, float z, AbstractClientPlayer player){
+    private void redirectElytraFly(float angle, float x, float y, float z, AbstractClientPlayer player){
         if (!EntityHelper.isSpinAttacking(player)) {
             GlStateManager.rotate(angle, x, y, z);
         }

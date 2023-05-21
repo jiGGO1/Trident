@@ -49,8 +49,8 @@ public class MixinItemTideTrident extends Item implements ITrident {
     }
 
     @Inject(method = "onPlayerStoppedUsing", at = @At(value = "HEAD"), cancellable = true)
-    private void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase entity, int timeLeft, CallbackInfo info) {
-        ITrident.super.onPlayerStoppedUsing(stack, world, entity, timeLeft);
+    private void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase living, int timeLeft, CallbackInfo info) {
+        ITrident.super.onPlayerStoppedUsing(stack, world, living, timeLeft);
         info.cancel();
     }
 
@@ -76,18 +76,18 @@ public class MixinItemTideTrident extends Item implements ITrident {
     }
 
     @Override
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
+    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase living) {
         if ((double)state.getBlockHardness(worldIn, pos) != 0.0D) {
-            stack.damageItem(2, entityLiving);
+            stack.damageItem(2, living);
         }
         return true;
     }
 
     @Override
-    public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot equipmentSlot) {
-        Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(equipmentSlot);
+    public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot slot) {
+        Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
 
-        if (equipmentSlot == EntityEquipmentSlot.MAINHAND) {
+        if (slot == EntityEquipmentSlot.MAINHAND) {
             multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 12.0D, 0));
             multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -2.9F, 0));
         }

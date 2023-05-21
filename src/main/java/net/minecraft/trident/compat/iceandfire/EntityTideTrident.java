@@ -15,8 +15,8 @@ public class EntityTideTrident extends EntityTrident {
         this.thrownStack = new ItemStack(IafItemRegistry.tide_trident);
     }
 
-    public EntityTideTrident(World world, EntityLivingBase thrower, ItemStack thrownStackIn) {
-        super(world, thrower, thrownStackIn);
+    public EntityTideTrident(World world, EntityLivingBase thrower, ItemStack thrownStack) {
+        super(world, thrower, thrownStack);
         this.setSize(0.85F, 0.5F);
     }
 

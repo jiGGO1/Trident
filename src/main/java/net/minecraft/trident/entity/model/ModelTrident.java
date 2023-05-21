@@ -16,7 +16,7 @@ public class ModelTrident extends ModelBase {
     public ModelTrident() {
         this.textureWidth = 32;
         this.textureHeight = 32;
-        modelRenderer = new ModelRenderer(this,0, 6);
+        this.modelRenderer = new ModelRenderer(this,0, 6);
         this.modelRenderer.addBox(-0.5F, 2.0F, -0.5F, 1, 25, 1, 0);
         ModelRenderer modelrenderer = new ModelRenderer(this, 4, 0);
         modelrenderer.addBox(-1.5F, 0.0F, -0.5F, 3, 2, 1);

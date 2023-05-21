@@ -10,6 +10,7 @@ import net.minecraft.trident.entity.EntityTrident;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import net.minecraftforge.event.ForgeEventFactory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -51,7 +52,7 @@ public abstract class MixinEntityArrow extends Entity {
     }
 
     @Inject(method = "onUpdate()V", at = @At(value = "HEAD"), cancellable = true)
-    public void onTrident(CallbackInfo info) {
+    private void onTrident(CallbackInfo info) {
         if (((Object)this) instanceof EntityTrident) {
             EntityTrident trident = (EntityTrident)(Object)this;
             super.onUpdate();
@@ -63,12 +64,12 @@ public abstract class MixinEntityArrow extends Entity {
                 this.prevRotationYaw = this.rotationYaw;
                 this.prevRotationPitch = this.rotationPitch;
             }
-            BlockPos blockpos = new BlockPos(this.xTile, this.yTile, this.zTile);
-            IBlockState iblockstate = this.world.getBlockState(blockpos);
-            Block block = iblockstate.getBlock();
-            if (iblockstate.getMaterial() != Material.AIR && !flag) {
-                AxisAlignedBB axisalignedbb = iblockstate.getCollisionBoundingBox(this.world, blockpos);
-                if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(blockpos).contains(new Vec3d(this.posX, this.posY, this.posZ))) {
+            BlockPos pos = new BlockPos(this.xTile, this.yTile, this.zTile);
+            IBlockState state = this.world.getBlockState(pos);
+            Block block = state.getBlock();
+            if (state.getMaterial() != Material.AIR && !flag) {
+                AxisAlignedBB box = state.getCollisionBoundingBox(this.world, pos);
+                if (box != Block.NULL_AABB && box.offset(pos).contains(new Vec3d(this.posX, this.posY, this.posZ))) {
                     this.inGround = true;
                 }
             }
@@ -79,8 +80,8 @@ public abstract class MixinEntityArrow extends Entity {
                 this.extinguish();
             }
             if (this.inGround && !flag) {
-                int j = block.getMetaFromState(iblockstate);
-                if ((block != this.inTile || j != this.inData) && !this.world.collidesWithAnyBlock(this.getEntityBoundingBox().grow(0.06D))) {
+                int meta = block.getMetaFromState(state);
+                if ((block != this.inTile || meta != this.inData) && !this.world.collidesWithAnyBlock(this.getEntityBoundingBox().grow(0.06D))) {
                     this.inGround = false;
                     this.motionX *= (double) (this.rand.nextFloat() * 0.2F);
                     this.motionY *= (double) (this.rand.nextFloat() * 0.2F);
@@ -97,26 +98,26 @@ public abstract class MixinEntityArrow extends Entity {
             } else {
                 this.timeInGround = 0;
                 ++this.ticksInAir;
-                Vec3d vec3d1 = new Vec3d(this.posX, this.posY, this.posZ);
-                Vec3d vec3d = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-                RayTraceResult raytraceresult = this.world.rayTraceBlocks(vec3d1, vec3d, false, true, false);
-                vec3d1 = new Vec3d(this.posX, this.posY, this.posZ);
-                vec3d = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
-                if (raytraceresult != null) {
-                    vec3d = new Vec3d(raytraceresult.hitVec.x, raytraceresult.hitVec.y, raytraceresult.hitVec.z);
+                Vec3d current = new Vec3d(this.posX, this.posY, this.posZ);
+                Vec3d next = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+                RayTraceResult result = this.world.rayTraceBlocks(current, next, false, true, false);
+                current = new Vec3d(this.posX, this.posY, this.posZ);
+                next = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
+                if (result != null) {
+                    next = new Vec3d(result.hitVec.x, result.hitVec.y, result.hitVec.z);
                 }
-                Entity entity = this.findEntityOnPath(vec3d1, vec3d);
+                Entity entity = this.findEntityOnPath(current, next);
                 if (entity != null) {
-                    raytraceresult = new RayTraceResult(entity);
+                    result = new RayTraceResult(entity);
                 }
-                if (raytraceresult != null && raytraceresult.entityHit instanceof EntityPlayer) {
-                    EntityPlayer entityplayer = (EntityPlayer) raytraceresult.entityHit;
-                    if (this.shootingEntity instanceof EntityPlayer && !((EntityPlayer) this.shootingEntity).canAttackPlayer(entityplayer)) {
-                        raytraceresult = null;
+                if (result != null && result.entityHit instanceof EntityPlayer) {
+                    EntityPlayer player = (EntityPlayer) result.entityHit;
+                    if (this.shootingEntity instanceof EntityPlayer && !((EntityPlayer) this.shootingEntity).canAttackPlayer(player)) {
+                        result = null;
                     }
                 }
-                if (raytraceresult != null && !flag && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
-                    this.onHit(raytraceresult);
+                if (result != null && !flag && !ForgeEventFactory.onProjectileImpact(this, result)) {
+                    this.onHit(result);
                     this.isAirBorne = true;
                 }
                 if (this.getIsCritical()) {
@@ -127,14 +128,14 @@ public abstract class MixinEntityArrow extends Entity {
                 this.posX += this.motionX;
                 this.posY += this.motionY;
                 this.posZ += this.motionZ;
-                float f4 = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
+                float value = MathHelper.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
                 if (flag) {
                     this.rotationYaw = (float)(MathHelper.atan2(-this.motionX, -this.motionZ) * (double)(180F / (float)Math.PI));
                 } else {
                     this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (double)(180F / (float)Math.PI));
                 }
-                for (this.rotationPitch = (float) (MathHelper.atan2(this.motionY, (double) f4) * (180D / Math.PI)); this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {
-                    ;
+                for (; this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {
+                    this.rotationPitch = (float) (MathHelper.atan2(this.motionY, (double) value) * (180D / Math.PI));
                 }
                 while (this.rotationPitch - this.prevRotationPitch >= 180.0F) {
                     this.prevRotationPitch += 360.0F;
@@ -147,20 +148,20 @@ public abstract class MixinEntityArrow extends Entity {
                 }
                 this.rotationPitch = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * 0.2F;
                 this.rotationYaw = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * 0.2F;
-                float f1 = 0.99F;
-                float f2 = 0.05F;
+                float drag = 0.99F;
+                float gravity = 0.05F;
                 if (this.isInWater()) {
                     for (int i = 0; i < 4; ++i) {
                         float f3 = 0.25F;
                         this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * f3, this.posY - this.motionY * f3, this.posZ - this.motionZ * f3, this.motionX, this.motionY, this.motionZ);
                     }
-                    f1 = trident.getWaterDrag();
+                    drag = trident.getWaterDrag();
                 }
-                this.motionX *= (double) f1;
-                this.motionY *= (double) f1;
-                this.motionZ *= (double) f1;
+                this.motionX *= (double) drag;
+                this.motionY *= (double) drag;
+                this.motionZ *= (double) drag;
                 if (!this.hasNoGravity()) {
-                    this.motionY -= f2;
+                    this.motionY -= gravity;
                 }
                 this.setPosition(this.posX, this.posY, this.posZ);
                 this.doBlockCollisions();

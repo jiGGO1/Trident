@@ -34,7 +34,7 @@ public abstract class MixinRenderItem {
 
     @Final
     @Shadow
-    private ItemModelMesher itemModelMesher;
+    public ItemModelMesher itemModelMesher;
 
     @Final
     @Shadow
@@ -42,7 +42,7 @@ public abstract class MixinRenderItem {
 
     @Inject(method = "renderItemModelIntoGUI(Lnet/minecraft/item/ItemStack;IILnet/minecraft/client/renderer/block/model/IBakedModel;)V",
             at = @At(value = "HEAD"), cancellable = true)
-    public void renderTrident(ItemStack stack, int x, int y, IBakedModel bakedmodel, CallbackInfo info){
+    private void renderTrident(ItemStack stack, int x, int y, IBakedModel bakedmodel, CallbackInfo info){
         if (stack.getItem() instanceof ITrident) {
             ITrident trident = (ITrident) stack.getItem();
             IBakedModel model = this.itemModelMesher.getModelManager().getModel(trident.getModel());
@@ -72,12 +72,12 @@ public abstract class MixinRenderItem {
 
     @Inject(method = "renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/ItemCameraTransforms$TransformType;)V", cancellable = true,
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderItem;renderItemModel(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/client/renderer/block/model/ItemCameraTransforms$TransformType;Z)V"))
-    public void renderItemFrame(ItemStack stack, ItemCameraTransforms.TransformType transformType, CallbackInfo info){
-        if (transformType == ItemCameraTransforms.TransformType.FIXED) {
+    private void renderItemFrame(ItemStack stack, ItemCameraTransforms.TransformType type, CallbackInfo info){
+        if (type == ItemCameraTransforms.TransformType.FIXED) {
             if (stack.getItem() instanceof ITrident) {
                 ITrident trident = (ITrident) stack.getItem();
                 IBakedModel model = this.itemModelMesher.getModelManager().getModel(trident.getModel());
-                this.renderItemModel(stack, model, transformType, false);
+                this.renderItemModel(stack, model, type, false);
                 info.cancel();
             }
         }
@@ -142,15 +142,15 @@ public abstract class MixinRenderItem {
     public abstract void renderItem(ItemStack stack, IBakedModel model);
 
     @Shadow
-    public abstract void renderModel(IBakedModel model, ItemStack stack);
+    protected abstract void renderModel(IBakedModel model, ItemStack stack);
 
     @Shadow
-    public abstract void renderEffect(IBakedModel model);
+    protected abstract void renderEffect(IBakedModel model);
 
     @Shadow
-    abstract void setupGuiTransform(int xPosition, int yPosition, boolean isGui3d);
+    protected abstract void setupGuiTransform(int xPosition, int yPosition, boolean isGui3d);
 
     @Shadow
-    protected abstract void renderItemModel(ItemStack stack, IBakedModel model, ItemCameraTransforms.TransformType transform, boolean leftHanded);
+    protected abstract void renderItemModel(ItemStack stack, IBakedModel model, ItemCameraTransforms.TransformType type, boolean leftHanded);
 
 }

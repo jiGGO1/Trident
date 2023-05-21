@@ -18,13 +18,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EntityVillager.class)
 public abstract class MixinEntityVillager extends EntityAgeable {
 
-    public MixinEntityVillager(World worldIn) {
-        super(worldIn);
+    public MixinEntityVillager(World world) {
+        super(world);
     }
 
     @Inject(method = "onStruckByLightning(Lnet/minecraft/entity/effect/EntityLightningBolt;)V",
             at = @At(value = "HEAD"))
-    public void trigger(EntityLightningBolt lightningBolt, CallbackInfo info){
+    private void trigger(EntityLightningBolt lightningBolt, CallbackInfo info){
         if (!this.world.isRemote && !this.isDead){
             if (Trident.LIGHTNING_BOLTS.containsKey(lightningBolt)) {
                 Trident.LIGHTNING_TRIGGER.trigger((EntityPlayerMP)Trident.LIGHTNING_BOLTS.get(lightningBolt));

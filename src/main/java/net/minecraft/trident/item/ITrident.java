@@ -66,18 +66,18 @@ public interface ITrident {
         return new EntityTrident(world, thrower, stack);
     }
 
-    default void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase entityLiving, int timeLeft) {
-        if (entityLiving instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) entityLiving;
-            int i = this.getItem().getMaxItemUseDuration(stack) - timeLeft;
-            if (i >= 10) {
-                int j = TridentEnchantments.getRiptideModifier(stack);
-                if (j <= 0 || this.isInWaterOrRain(player)) {
+    default void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase living, int timeLeft) {
+        if (living instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) living;
+            int time = this.getItem().getMaxItemUseDuration(stack) - timeLeft;
+            if (time >= 10) {
+                int riptide = TridentEnchantments.getRiptideModifier(stack);
+                if (riptide <= 0 || this.isInWaterOrRain(player)) {
                     if (!world.isRemote) {
                         stack.damageItem(1, player);
-                        if (j == 0) {
+                        if (riptide == 0) {
                             EntityTrident trident = this.getTrident(world, player, stack);
-                            trident.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 2.5F + (float) j * 0.5F, 1.0F);
+                            trident.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 2.5F + (float) riptide * 0.5F, 1.0F);
                             if (player.isCreative()) {
                                 trident.pickupStatus = EntityArrow.PickupStatus.CREATIVE_ONLY;
                             }
@@ -88,14 +88,14 @@ public interface ITrident {
                             }
                         }
                     }
-                    if (j > 0) {
-                        float f7 = player.rotationYaw;
-                        float f = player.rotationPitch;
-                        float f1 = -MathHelper.sin(f7 * ((float) Math.PI / 180F)) * MathHelper.cos(f * ((float) Math.PI / 180F));
-                        float f2 = -MathHelper.sin(f * ((float) Math.PI / 180F));
-                        float f3 = MathHelper.cos(f7 * ((float) Math.PI / 180F)) * MathHelper.cos(f * ((float) Math.PI / 180F));
+                    if (riptide > 0) {
+                        float yaw = player.rotationYaw;
+                        float pitch = player.rotationPitch;
+                        float f1 = -MathHelper.sin(yaw * ((float) Math.PI / 180F)) * MathHelper.cos(pitch * ((float) Math.PI / 180F));
+                        float f2 = -MathHelper.sin(pitch * ((float) Math.PI / 180F));
+                        float f3 = MathHelper.cos(yaw * ((float) Math.PI / 180F)) * MathHelper.cos(pitch * ((float) Math.PI / 180F));
                         float f4 = MathHelper.sqrt(f1 * f1 + f2 * f2 + f3 * f3);
-                        float f5 = 3.0F * ((1.0F + (float) j) / 4.0F);
+                        float f5 = 3.0F * ((1.0F + (float) riptide) / 4.0F);
                         f1 = f1 * (f5 / f4);
                         f2 = f2 * (f5 / f4);
                         f3 = f3 * (f5 / f4);
@@ -106,9 +106,9 @@ public interface ITrident {
                             player.move(MoverType.SELF, 0.0D, (double) f6, 0.0D);
                         }
                         SoundEvent sound;
-                        if (j >= 3) {
+                        if (riptide >= 3) {
                             sound = TridentSounds.ITEM_TRIDENT_RIPTIDE_3;
-                        } else if (j == 2) {
+                        } else if (riptide == 2) {
                             sound = TridentSounds.ITEM_TRIDENT_RIPTIDE_2;
                         } else {
                             sound = TridentSounds.ITEM_TRIDENT_RIPTIDE_1;

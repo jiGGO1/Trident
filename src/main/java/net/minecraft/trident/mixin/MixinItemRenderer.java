@@ -35,16 +35,16 @@ public abstract class MixinItemRenderer {
 
     @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V",
             at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/item/ItemStack;getItemUseAction()Lnet/minecraft/item/EnumAction;"))
-    public void renderTrident(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo info){
+    private void renderTrident(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo info){
         if (stack.getItemUseAction() == Trident.SPEAR) {
             boolean flag = hand == EnumHand.MAIN_HAND;
-            EnumHandSide enumhandside = flag ? player.getPrimaryHand() : player.getPrimaryHand().opposite();
-            int k = enumhandside == EnumHandSide.RIGHT ? 1 : -1;
-            this.transformSideFirstPerson(enumhandside, equippedProgress);
-            GlStateManager.translate((float)k * -0.5F, 0.7F, 0.1F);
+            EnumHandSide side = flag ? player.getPrimaryHand() : player.getPrimaryHand().opposite();
+            int offset = side == EnumHandSide.RIGHT ? 1 : -1;
+            this.transformSideFirstPerson(side, equippedProgress);
+            GlStateManager.translate((float)offset * -0.5F, 0.7F, 0.1F);
             GlStateManager.rotate(-55.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate((float)k * 35.3F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate((float)k * -9.785F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate((float)offset * 35.3F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate((float)offset * -9.785F, 0.0F, 0.0F, 1.0F);
             float f5 = (float)stack.getMaxItemUseDuration() - ((float)this.mc.player.getItemInUseCount() - partialTicks + 1.0F);
             float f7 = f5 / 10.0F;
             if (f7 > 1.0F) {
@@ -58,35 +58,35 @@ public abstract class MixinItemRenderer {
             }
             GlStateManager.translate(0.0F, 0.0F, f7 * 0.2F);
             GlStateManager.scale(1.0F, 1.0F, 1.0F + f7 * 0.2F);
-            GlStateManager.rotate((float)k * 45.0F, 0.0F, -1.0F, 0.0F);
+            GlStateManager.rotate((float)offset * 45.0F, 0.0F, -1.0F, 0.0F);
         }
     }
 
     @Inject(method = "renderItemInFirstPerson(Lnet/minecraft/client/entity/AbstractClientPlayer;FFLnet/minecraft/util/EnumHand;FLnet/minecraft/item/ItemStack;F)V",
             at = @At(value = "HEAD"), cancellable = true)
-    public void renderAttack(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo info) {
+    private void renderAttack(AbstractClientPlayer player, float partialTicks, float pitch, EnumHand hand, float swingProgress, ItemStack stack, float equippedProgress, CallbackInfo info) {
         if (EntityHelper.isSpinAttacking(player) && !(player.isHandActive() && player.getItemInUseCount() > 0 && player.getActiveHand() == hand)) {
             GlStateManager.pushMatrix();
 
             boolean flag = hand == EnumHand.MAIN_HAND;
-            EnumHandSide enumhandside = flag ? player.getPrimaryHand() : player.getPrimaryHand().opposite();
-            boolean flag1 = enumhandside == EnumHandSide.RIGHT;
-            this.transformSideFirstPerson(enumhandside, equippedProgress);
-            int j = flag1 ? 1 : -1;
-            GlStateManager.translate((float) j * -0.4F, 0.8F, 0.3F);
-            GlStateManager.rotate((float) j * 65.0F, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate((float) j * -85.0F, 0.0F, 0.0F, 1.0F);
+            EnumHandSide side = flag ? player.getPrimaryHand() : player.getPrimaryHand().opposite();
+            boolean right = side == EnumHandSide.RIGHT;
+            this.transformSideFirstPerson(side, equippedProgress);
+            int offset = right ? 1 : -1;
+            GlStateManager.translate((float) offset * -0.4F, 0.8F, 0.3F);
+            GlStateManager.rotate((float) offset * 65.0F, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate((float) offset * -85.0F, 0.0F, 0.0F, 1.0F);
 
-            this.renderItemSide(player, stack, flag1 ? ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND : ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND, !flag1);
+            this.renderItemSide(player, stack, right ? ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND : ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND, !right);
             GlStateManager.popMatrix();
             info.cancel();
         }
     }
 
     @Shadow
-    abstract void transformSideFirstPerson(EnumHandSide hand, float equippedProgress);
+    protected abstract void transformSideFirstPerson(EnumHandSide hand, float equippedProgress);
 
     @Shadow
-    abstract void renderItemSide(EntityLivingBase entity, ItemStack stack, ItemCameraTransforms.TransformType type, boolean leftHanded);
+    public abstract void renderItemSide(EntityLivingBase entity, ItemStack stack, ItemCameraTransforms.TransformType type, boolean leftHanded);
 
 }

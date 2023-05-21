@@ -22,17 +22,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(RenderLivingBase.class)
 public abstract class MixinRenderLivingBase<T extends EntityLivingBase> extends Render<T> {
 
-    protected MixinRenderLivingBase(RenderManager renderManager) {
-        super(renderManager);
+    public MixinRenderLivingBase(RenderManager manager) {
+        super(manager);
     }
 
     @Inject(method = "applyRotations(Lnet/minecraft/entity/EntityLivingBase;FFF)V", cancellable = true,
             at = @At(value = "INVOKE", target = "Lnet/minecraft/util/text/TextFormatting;getTextWithoutFormattingCodes(Ljava/lang/String;)Ljava/lang/String;", opcode = 1))
-    public void renderSpinAttack(T entityLiving, float ageInTicks, float rotationYaw, float partialTicks, CallbackInfo info){
-        if (entityLiving instanceof EntityPlayer) {
-            if (EntityHelper.isSpinAttacking((EntityPlayer)entityLiving)){
-                GlStateManager.rotate(-90.0F - entityLiving.rotationPitch, 1.0F, 0.0F, 0.0F);
-                GlStateManager.rotate(((float)entityLiving.ticksExisted + partialTicks) * -75.0F, 0.0F, 1.0F, 0.0F);
+    private void renderSpinAttack(T living, float ageInTicks, float rotationYaw, float partialTicks, CallbackInfo info){
+        if (living instanceof EntityPlayer) {
+            if (EntityHelper.isSpinAttacking((EntityPlayer) living)) {
+                GlStateManager.rotate(-90.0F - living.rotationPitch, 1.0F, 0.0F, 0.0F);
+                GlStateManager.rotate(((float) living.ticksExisted + partialTicks) * -75.0F, 0.0F, 1.0F, 0.0F);
                 info.cancel();
             }
         }

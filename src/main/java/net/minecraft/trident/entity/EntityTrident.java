@@ -43,10 +43,10 @@ public class EntityTrident extends EntityArrow {
         this.setSize(0.5F, 0.5F);
     }
 
-    public EntityTrident(World world, EntityLivingBase thrower, ItemStack thrownStackIn) {
+    public EntityTrident(World world, EntityLivingBase thrower, ItemStack thrownStack) {
         super(world, thrower);
-        this.thrownStack = thrownStackIn.copy();
-        this.dataManager.set(LOYALTY_LEVEL, (byte) TridentEnchantments.getLoyaltyModifier(thrownStackIn));
+        this.thrownStack = thrownStack.copy();
+        this.dataManager.set(LOYALTY_LEVEL, (byte) TridentEnchantments.getLoyaltyModifier(thrownStack));
         this.dataManager.set(EFFECT, hasEffect());
         this.setSize(0.5F, 0.5F);
     }
@@ -71,24 +71,24 @@ public class EntityTrident extends EntityArrow {
         }
         Entity entity = this.shootingEntity;
         if ((this.dealtDamage || this.getNoClip()) && entity != null) {
-            int i = this.dataManager.get(LOYALTY_LEVEL);
-            if (i > 0 && !this.shouldReturnToThrower()) {
+            int loyalty = this.dataManager.get(LOYALTY_LEVEL);
+            if (loyalty > 0 && !this.shouldReturnToThrower()) {
                 if (!this.world.isRemote && this.pickupStatus == PickupStatus.ALLOWED) {
                     this.entityDropItem(this.getArrowStack(), 0.1F);
                 }
                 this.setDead();
-            } else if (i > 0) {
+            } else if (loyalty > 0) {
                 this.setNoClip(true);
-                Vec3d vec3d = new Vec3d(entity.posX - this.posX, entity.posY + (double)entity.getEyeHeight() - this.posY, entity.posZ - this.posZ);
-                this.posY += vec3d.y * 0.015D * (double)i;
+                Vec3d direction = new Vec3d(entity.posX - this.posX, entity.posY + (double) entity.getEyeHeight() - this.posY, entity.posZ - this.posZ);
+                this.posY += direction.y * 0.015D * (double) loyalty;
                 if (this.world.isRemote) {
                     this.lastTickPosY = this.posY;
                 }
-                vec3d = vec3d.normalize();
-                double d0 = 0.05D * (double)i;
-                this.motionX += vec3d.x * d0 - this.motionX * 0.05D;
-                this.motionY += vec3d.y * d0 - this.motionY * 0.05D;
-                this.motionZ += vec3d.z * d0 - this.motionZ * 0.05D;
+                direction = direction.normalize();
+                double velocity = 0.05D * (double) loyalty;
+                this.motionX += direction.x * velocity - this.motionX * 0.05D;
+                this.motionY += direction.y * velocity - this.motionY * 0.05D;
+                this.motionZ += direction.z * velocity - this.motionZ * 0.05D;
                 if (this.returningTicks == 0) {
                     this.playSound(TridentSounds.ITEM_TRIDENT_RETURN, 10.0F, 1.0F);
                 }
@@ -126,53 +126,53 @@ public class EntityTrident extends EntityArrow {
 
     protected void onHitEntity(RayTraceResult result) {
         Entity entity = result.entityHit;
-        float f = (float)this.getDamage();
+        float damage = (float) this.getDamage();
         if (entity instanceof EntityLivingBase) {
-            EntityLivingBase entitylivingbase = (EntityLivingBase)entity;
-            f += EnchantmentHelper.getModifierForCreature(this.thrownStack, entitylivingbase.getCreatureAttribute());
-            if (entity.isWet()) f += TridentEnchantments.getImpalingModifier(this.getArrowStack()) * 2.5;
+            EntityLivingBase living = (EntityLivingBase) entity;
+            damage += EnchantmentHelper.getModifierForCreature(this.thrownStack, living.getCreatureAttribute());
+            if (entity.isWet()) damage += TridentEnchantments.getImpalingModifier(this.getArrowStack()) * 2.5;
         }
-        Entity entity1 = this.shootingEntity;
-        DamageSource damagesource = EntityTrident.causeTridentDamage(this, entity1 == null ? this : entity1);
+        Entity shooter = this.shootingEntity;
+        DamageSource source = EntityTrident.causeTridentDamage(this, shooter == null ? this : shooter);
         this.dealtDamage = true;
         SoundEvent sound = TridentSounds.ITEM_TRIDENT_HIT;
-        if (entity.attackEntityFrom(damagesource, f) && entity instanceof EntityLivingBase) {
-            EntityLivingBase living = (EntityLivingBase)entity;
-            if (entity1 instanceof EntityLivingBase) {
-                EnchantmentHelper.applyThornEnchantments(living, entity1);
-                EnchantmentHelper.applyArthropodEnchantments((EntityLivingBase)entity1, living);
+        if (entity.attackEntityFrom(source, damage) && entity instanceof EntityLivingBase) {
+            EntityLivingBase living = (EntityLivingBase) entity;
+            if (shooter instanceof EntityLivingBase) {
+                EnchantmentHelper.applyThornEnchantments(living, shooter);
+                EnchantmentHelper.applyArthropodEnchantments((EntityLivingBase) shooter, living);
             }
             this.arrowHit(living);
         }
-        this.motionX *= (double)-0.01F;
-        this.motionY *= (double)-0.1F;
-        this.motionZ *= (double)-0.01F;
-        float f1 = 1.0F;
+        this.motionX *= (double) -0.01F;
+        this.motionY *= (double) -0.1F;
+        this.motionZ *= (double) -0.01F;
+        float volume = 1.0F;
         if (this.world.isThundering() && TridentEnchantments.hasChanneling(this.thrownStack)) {
-            BlockPos blockpos = entity.getPosition();
-            if (this.world.canSeeSky(blockpos)) {
+            BlockPos position = entity.getPosition();
+            if (this.world.canSeeSky(position)) {
                 EntityLightningBolt lightningBolt = new EntityLightningBolt(this.world,
-                        blockpos.getX(), blockpos.getY(), blockpos.getZ(), false);
+                        position.getX(), position.getY(), position.getZ(), false);
                 this.world.addWeatherEffect(lightningBolt);
                 this.addLightning(lightningBolt);
                 sound = TridentSounds.ITEM_TRIDENT_THUNDER;
-                f1 = 5.0F;
+                volume = 5.0F;
             }
         }
-        this.playSound(sound, f1, 1.0F);
+        this.playSound(sound, volume, 1.0F);
     }
 
     @Override
-    public void onCollideWithPlayer(EntityPlayer entityIn) {
+    public void onCollideWithPlayer(EntityPlayer player) {
         Entity entity = this.getShootingEntity();
-        if (entity == null || entity.getUniqueID() == entityIn.getUniqueID()) {
+        if (entity == null || entity.getUniqueID() == player.getUniqueID()) {
             if (!this.world.isRemote && (this.inGround || this.getNoClip()) && this.arrowShake <= 0) {
-                boolean flag = this.pickupStatus == EntityArrow.PickupStatus.ALLOWED || this.pickupStatus == EntityArrow.PickupStatus.CREATIVE_ONLY && entityIn.capabilities.isCreativeMode || this.getNoClip();
-                if (this.pickupStatus == EntityArrow.PickupStatus.ALLOWED && !entityIn.inventory.addItemStackToInventory(this.getArrowStack())) {
+                boolean flag = this.pickupStatus == EntityArrow.PickupStatus.ALLOWED || this.pickupStatus == EntityArrow.PickupStatus.CREATIVE_ONLY && player.capabilities.isCreativeMode || this.getNoClip();
+                if (this.pickupStatus == EntityArrow.PickupStatus.ALLOWED && !player.inventory.addItemStackToInventory(this.getArrowStack())) {
                     flag = false;
                 }
                 if (flag) {
-                    entityIn.onItemPickup(this, 1);
+                    player.onItemPickup(this, 1);
                     this.setDead();
                 }
             }
@@ -250,8 +250,8 @@ public class EntityTrident extends EntityArrow {
         return this.shootingEntity != null && this.world instanceof WorldServer ? ((WorldServer)this.world).getEntityFromUuid(this.shootingEntity.getUniqueID()) : null;
     }
 
-    public static DamageSource causeTridentDamage(Entity source, @Nullable Entity indirectEntityIn) {
-        return (new EntityDamageSourceIndirect("trident", source, indirectEntityIn)).setProjectile();
+    public static DamageSource causeTridentDamage(Entity source, @Nullable Entity indirectEntity) {
+        return new EntityDamageSourceIndirect("trident", source, indirectEntity).setProjectile();
     }
 
     public void setNoClip(boolean noClip){

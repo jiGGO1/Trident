@@ -19,27 +19,28 @@ public class RenderTideTrident extends Render<EntityTideTrident> {
         super(renderer);
     }
 
-    public void doRender(EntityTideTrident entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        this.bindEntityTexture(entity);
+    @Override
+    public void doRender(EntityTideTrident trident, double x, double y, double z, float entityYaw, float partialTicks) {
+        this.bindEntityTexture(trident);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.pushMatrix();
         GlStateManager.disableCull();
         GlStateManager.disableLighting();
         GlStateManager.translate((float)x, (float)y, (float)z);
-        GlStateManager.rotate(entity.prevRotationYaw + (entity.prevRotationYaw - entity.rotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(entity.prevRotationPitch + (entity.prevRotationPitch - entity.rotationPitch) * partialTicks + 90.0F, 0.0F, 0.0F, 1.0F);
-        this.modelTideTrident.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-        if (entity.effect()) {
-            RenderModelEnchant.renderEnchantedGlint(this, entity, this.modelTideTrident, 0.0625F);
+        GlStateManager.rotate(trident.prevRotationYaw + (trident.prevRotationYaw - trident.rotationYaw) * partialTicks - 90.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(trident.prevRotationPitch + (trident.prevRotationPitch - trident.rotationPitch) * partialTicks + 90.0F, 0.0F, 0.0F, 1.0F);
+        this.modelTideTrident.render(trident, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+        if (trident.effect()) {
+            RenderModelEnchant.renderEnchantedGlint(this, trident, this.modelTideTrident, 0.0625F);
         }
         GlStateManager.popMatrix();
-        super.doRender(entity, x, y, z, entityYaw, partialTicks);
+        super.doRender(trident, x, y, z, entityYaw, partialTicks);
         GlStateManager.enableLighting();
         GlStateManager.enableCull();
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityTideTrident entity) {
+    protected ResourceLocation getEntityTexture(EntityTideTrident trident) {
         return TEXTURE;
     }
 

@@ -30,25 +30,25 @@ public class LightningTrigger implements ICriterionTrigger<LightningTrigger.Inst
     }
 
     @Override
-    public void addListener(PlayerAdvancements playerAdvancementsIn, Listener<Instance> listener) {
-        Listeners listeners = this.listeners.computeIfAbsent(playerAdvancementsIn, Listeners::new);
+    public void addListener(PlayerAdvancements playerAdvancements, Listener<Instance> listener) {
+        Listeners listeners = this.listeners.computeIfAbsent(playerAdvancements, Listeners::new);
         listeners.add(listener);
     }
 
     @Override
-    public void removeListener(PlayerAdvancements playerAdvancementsIn, Listener<Instance> listener) {
-        Listeners listeners = this.listeners.get(playerAdvancementsIn);
+    public void removeListener(PlayerAdvancements playerAdvancements, Listener<Instance> listener) {
+        Listeners listeners = this.listeners.get(playerAdvancements);
         if (listeners != null) {
             listeners.remove(listener);
             if (listeners.isEmpty()) {
-                this.listeners.remove(playerAdvancementsIn);
+                this.listeners.remove(playerAdvancements);
             }
         }
     }
 
     @Override
-    public void removeAllListeners(PlayerAdvancements playerAdvancementsIn) {
-        this.listeners.remove(playerAdvancementsIn);
+    public void removeAllListeners(PlayerAdvancements playerAdvancements) {
+        this.listeners.remove(playerAdvancements);
     }
 
     @Override
@@ -56,8 +56,8 @@ public class LightningTrigger implements ICriterionTrigger<LightningTrigger.Inst
         return new Instance();
     }
 
-    public void trigger(EntityPlayerMP parPlayer) {
-        Listeners listeners = this.listeners.get(parPlayer.getAdvancements());
+    public void trigger(EntityPlayerMP player) {
+        Listeners listeners = this.listeners.get(player.getAdvancements());
         if (listeners != null) {
             listeners.trigger();
         }
@@ -71,13 +71,13 @@ public class LightningTrigger implements ICriterionTrigger<LightningTrigger.Inst
 
     }
 
-    static class Listeners {
+    public static class Listeners {
 
         private final PlayerAdvancements playerAdvancements;
         private final Set<Listener<Instance>> listeners = Sets.newHashSet();
 
-        public Listeners(PlayerAdvancements playerAdvancementsIn) {
-            this.playerAdvancements = playerAdvancementsIn;
+        public Listeners(PlayerAdvancements playerAdvancements) {
+            this.playerAdvancements = playerAdvancements;
         }
 
         public boolean isEmpty() {

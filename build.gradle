@@ -14,7 +14,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'idea'
 
-version = "1.0.3"
+version = "1.0.4"
 group = "net.minecraft.trident"
 archivesBaseName = "Trident"
 
@@ -39,6 +39,8 @@ dependencies {
     deobfCompile "mezz.jei:jei_1.12.2:4.15.+"
     deobfCompile "curse.maven:coreutil-237749:2902920"
     deobfCompile "curse.maven:weather-237746:2596867"
+    deobfCompile "curse.maven:MCglTF-591547:4367036"
+    deobfCompile "curse.maven:ModularWarfare-350869:4426196"
     provided('org.spongepowered:mixin:0.8-SNAPSHOT') {
         exclude module: 'guava'
         exclude module: 'commons-io'

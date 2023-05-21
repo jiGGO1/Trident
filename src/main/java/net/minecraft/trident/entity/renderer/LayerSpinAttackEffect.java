@@ -49,7 +49,7 @@ public class LayerSpinAttackEffect implements LayerRenderer<EntityLivingBase> {
     }
 
     @SideOnly(Side.CLIENT)
-    static class Model extends ModelBase {
+    public static class Model extends ModelBase {
 
         private final ModelRenderer modelRenderer;
 

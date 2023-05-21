@@ -20,7 +20,7 @@ import java.util.Set;
 public class TridentConfigFactory implements IModGuiFactory {
 
     @Override
-    public void initialize(Minecraft mc) {
+    public void initialize(Minecraft minecraft) {
 
     }
 
@@ -30,8 +30,8 @@ public class TridentConfigFactory implements IModGuiFactory {
     }
 
     @Override
-    public GuiScreen createConfigGui(GuiScreen parent) {
-        return new GuiConfig(parent, ConfigElement.from(TridentConfig.class).getChildElements(), Trident.MODID, false, false, getTitle(parent));
+    public GuiScreen createConfigGui(GuiScreen screen) {
+        return new GuiConfig(screen, ConfigElement.from(TridentConfig.class).getChildElements(), Trident.MODID, false, false, getTitle(screen));
     }
 
     @Override
@@ -39,8 +39,8 @@ public class TridentConfigFactory implements IModGuiFactory {
         return Collections.emptySet();
     }
 
-    private static String getTitle(GuiScreen parent) {
-        if (parent instanceof GuiModList) {
+    private static String getTitle(GuiScreen screen) {
+        if (screen instanceof GuiModList) {
             Configuration config = new Configuration(new File("config/trident.cfg"));
             return GuiConfig.getAbridgedConfigPath(config.toString());
         }

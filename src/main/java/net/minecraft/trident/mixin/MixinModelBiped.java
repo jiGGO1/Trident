@@ -35,7 +35,7 @@ public abstract class MixinModelBiped extends ModelBase {
 
     @Inject(method = "setRotationAngles(FFFFFFLnet/minecraft/entity/Entity;)V",
             at = @At(value = "TAIL"))
-    public void renderTrident(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn, CallbackInfo info){
+    private void renderTrident(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn, CallbackInfo info){
         if (this.rightArmPose == ClientProxy.THROW_SPEAR) {
             this.bipedRightArm.rotateAngleX = this.bipedRightArm.rotateAngleX * 0.5F - (float)Math.PI;
             this.bipedRightArm.rotateAngleY = 0.0F;
