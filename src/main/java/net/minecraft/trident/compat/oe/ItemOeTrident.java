@@ -1,21 +1,21 @@
-package net.minecraft.trident.item;
+package net.minecraft.trident.compat.oe;
 
+import com.sirsquidly.oe.entity.EntityTrident;
+import com.sirsquidly.oe.items.ItemTrident;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.item.Item;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.trident.Trident;
-import net.minecraft.trident.capabilities.CapabilityHandler;
-import net.minecraft.trident.capabilities.ISpinAttackDuration;
 import net.minecraft.trident.enchantment.TridentEnchantments;
-import net.minecraft.trident.entity.EntityTrident;
+import net.minecraft.trident.item.ITrident;
 import net.minecraft.trident.sound.TridentSounds;
-import net.minecraft.trident.util.EntityHelper;
 import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -23,50 +23,28 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * @author ji_GGO
- * @date 2022/12/02
+ * @date 2023/09/01
  */
-public interface ITrident {
+public class ItemOeTrident extends ItemTrident implements ITrident {
 
-    default ModelResourceLocation getModel() {
-        return Trident.MODEL;
+    public ItemOeTrident() {
+        this.addPropertyOverride(new ResourceLocation("throwing"), (stack, world, entity) -> {
+            return entity != null && entity.isHandActive() && entity.getActiveItemStack() == stack ? 2.0F : 0.0F;
+        });
     }
 
-    default ModelResourceLocation getHandModel() {
-        return Trident.HAND_MODEL;
+    @Override
+    public boolean canDestroyBlockInCreative(World world, BlockPos pos, ItemStack stack, EntityPlayer player) {
+        return !player.isCreative();
     }
 
-    @SideOnly(Side.CLIENT)
-    default void render(ItemStack stack, ItemCameraTransforms.TransformType type) {
-
+    @Override
+    public EnumAction getItemUseAction(ItemStack stack) {
+        return Trident.SPEAR;
     }
 
-    default void startSpinAttack(EntityPlayer player, int time){
-        if(player.hasCapability(CapabilityHandler.capability, null)) {
-            ISpinAttackDuration trident = player.getCapability(CapabilityHandler.capability, null);
-            trident.setSpinAttackDuration(time);
-        }
-        if (!player.world.isRemote) {
-            EntityHelper.setLivingFlag(player, true);
-        }
-    }
-
-    default ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        ItemStack stack = player.getHeldItem(hand);
-        if (stack.getItemDamage() >= stack.getMaxDamage() - 1) {
-            return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
-        } else if (TridentEnchantments.getRiptideModifier(stack) > 0 && !this.isInWaterOrRain(player)) {
-            return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
-        } else {
-            player.setActiveHand(hand);
-            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
-        }
-    }
-
-    default EntityTrident getTrident(World world, EntityLivingBase thrower, ItemStack stack) {
-        return new EntityTrident(world, thrower, stack);
-    }
-
-    default void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase living, int timeLeft) {
+    @Override
+    public void onPlayerStoppedUsing(ItemStack stack, World world, EntityLivingBase living, int timeLeft) {
         if (living instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) living;
             int time = this.getItem().getMaxItemUseDuration(stack) - timeLeft;
@@ -76,7 +54,9 @@ public interface ITrident {
                     if (!world.isRemote) {
                         stack.damageItem(1, player);
                         if (riptide == 0) {
-                            EntityTrident trident = this.getTrident(world, player, stack);
+                            EntityTrident trident = new EntityTrident(world, player);
+                            trident.setItem(stack);
+                            trident.setIsCritical(true);
                             trident.shoot(player, player.rotationPitch, player.rotationYaw, 0.0F, 2.5F + (float) riptide * 0.5F, 1.0F);
                             if (player.isCreative()) {
                                 trident.pickupStatus = EntityArrow.PickupStatus.CREATIVE_ONLY;
@@ -121,22 +101,30 @@ public interface ITrident {
         }
     }
 
-    default boolean isInWaterOrRain(EntityPlayer player) {
-        if (player.isWet()) {
-            return true;
-        } else if (Trident.getRiptide().test(player)) {
-            return true;
-        } else {
-            return false;
-        }
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+        return ITrident.super.onItemRightClick(world, player, hand);
     }
 
-    default boolean canApplyTridentEnchantment() {
-        return true;
+    @Override
+    public boolean canApplyTridentEnchantment() {
+        return false;
     }
 
-    default Item getItem() {
-        return (Item) this;
+    @Override
+    public ModelResourceLocation getModel() {
+        return OceanicExpanse.MODEL;
+    }
+
+    @Override
+    public ModelResourceLocation getHandModel() {
+        return OceanicExpanse.HAND_MODEL;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void render(ItemStack stack, ItemCameraTransforms.TransformType type) {
+        RenderItemOeTrident.render(stack, type);
     }
 
 }

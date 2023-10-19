@@ -30,12 +30,12 @@ public class LayerSpinAttackEffect implements LayerRenderer<EntityLivingBase> {
     public void doRenderLayer(EntityLivingBase entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         if (EntityHelper.isSpinAttacking((EntityPlayer)entity)) {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            renderPlayer.bindTexture(RIPTIDE);
+            this.renderPlayer.bindTexture(RIPTIDE);
             for(int i = 0; i < 3; ++i) {
                 GlStateManager.pushMatrix();
                 GlStateManager.rotate(ageInTicks * (float)(-(45 + i * 5)), 0.0F, 1.0F, 0.0F);
-                float f = 0.75F * (float)i;
-                GlStateManager.scale(f, f, f);
+                float factor = 0.75F * (float)i;
+                GlStateManager.scale(factor, factor, factor);
                 GlStateManager.translate(0.0F, -0.2F + 0.6F * (float)i, 0.0F);
                 this.model.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
                 GlStateManager.popMatrix();
@@ -51,18 +51,18 @@ public class LayerSpinAttackEffect implements LayerRenderer<EntityLivingBase> {
     @SideOnly(Side.CLIENT)
     public static class Model extends ModelBase {
 
-        private final ModelRenderer modelRenderer;
+        private final ModelRenderer root;
 
         public Model() {
             this.textureWidth = 64;
             this.textureHeight = 64;
-            this.modelRenderer = new ModelRenderer(this, 0, 0);
-            this.modelRenderer.addBox(-8.0F, -16.0F, -8.0F, 16, 32, 16);
+            this.root = new ModelRenderer(this, 0, 0);
+            this.root.addBox(-8.0F, -16.0F, -8.0F, 16, 32, 16);
         }
 
         @Override
         public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-            this.modelRenderer.render(scale);
+            this.root.render(scale);
         }
 
     }

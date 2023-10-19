@@ -2,10 +2,12 @@ package net.minecraft.trident.client;
 
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.trident.common.CommonProxy;
+import net.minecraft.trident.compat.modularwarfare.ModularWarfareInit;
 import net.minecraft.trident.entity.EntityTrident;
 import net.minecraft.trident.entity.renderer.RenderTrident;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -25,6 +27,9 @@ public class ClientProxy extends CommonProxy {
     public void preInit(final FMLPreInitializationEvent event) {
         super.preInit(event);
         RenderingRegistry.registerEntityRenderingHandler(EntityTrident.class, RenderTrident::new);
+        if (Loader.isModLoaded("modularwarfare")) {
+            ModularWarfareInit.init();
+        }
     }
 
     @Override

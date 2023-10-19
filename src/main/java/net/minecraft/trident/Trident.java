@@ -22,7 +22,6 @@ import net.minecraft.trident.capabilities.CapabilityHandler;
 import net.minecraft.trident.capabilities.CapabilityTrident;
 import net.minecraft.trident.capabilities.ISpinAttackDuration;
 import net.minecraft.trident.common.CommonProxy;
-import net.minecraft.trident.compat.weather.WeatherRiptide;
 import net.minecraft.trident.config.TridentConfig;
 import net.minecraft.trident.enchantment.TridentEnchantments;
 import net.minecraft.trident.entity.EntityTrident;
@@ -44,7 +43,6 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -73,12 +71,12 @@ import java.util.function.Predicate;
  */
 @Mod(modid = Trident.MODID, name = Trident.NAME, version = Trident.VERSION,
         guiFactory = "net.minecraft.trident.config.TridentConfigFactory",
-        dependencies = "before:modularwarfare")
+        dependencies = "before:modularwarfare;after:oe")
 public class Trident {
 
     public static final String MODID = "trident";
     public static final String NAME = "Trident Mod";
-    public static final String VERSION = "1.0.4";
+    public static final String VERSION = "1.0.5";
 
     public static final Logger LOGGER = LogManager.getLogger(MODID);
 
@@ -125,9 +123,6 @@ public class Trident {
 
     @EventHandler
     public void postInit(final FMLPostInitializationEvent event) {
-        if (Loader.isModLoaded("weather2")) {
-            WeatherRiptide.init();
-        }
         proxy.postInit(event);
     }
 
@@ -159,7 +154,7 @@ public class Trident {
     public void onAttachCapabilitiesEntity(final AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof EntityPlayer) {
             ICapabilitySerializable<NBTTagCompound> provider = new CapabilityTrident.ProvidePlayer();
-            event.addCapability(new ResourceLocation(MODID + ":trident"), provider);
+            event.addCapability(new ResourceLocation(MODID, "trident"), provider);
         }
     }
 

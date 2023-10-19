@@ -9,17 +9,17 @@ import net.minecraft.inventory.EntityEquipmentSlot;
  */
 public class EnchantmentLoyalty extends Enchantment {
 
-   public EnchantmentLoyalty(Enchantment.Rarity rarityIn, EntityEquipmentSlot... slots) {
-      super(rarityIn, TridentEnchantments.TRIDENT, slots);
+   public EnchantmentLoyalty(Enchantment.Rarity rarity, EntityEquipmentSlot... slots) {
+      super(rarity, TridentEnchantments.TRIDENT, slots);
    }
 
    @Override
-   public int getMinEnchantability(int enchantmentLevel) {
-      return 5 + enchantmentLevel * 7;
+   public int getMinEnchantability(int level) {
+      return 5 + level * 7;
    }
 
    @Override
-   public int getMaxEnchantability(int enchantmentLevel) {
+   public int getMaxEnchantability(int level) {
       return 50;
    }
 

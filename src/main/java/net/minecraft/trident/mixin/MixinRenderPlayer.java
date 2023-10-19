@@ -19,6 +19,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -33,8 +34,10 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(RenderPlayer.class)
 public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientPlayer> {
 
+    @Unique
     private ModelBiped.ArmPose mainHand;
 
+    @Unique
     private ModelBiped.ArmPose offHand;
 
     public MixinRenderPlayer(RenderManager manager, ModelBase model, float shadowSize) {
@@ -95,7 +98,8 @@ public abstract class MixinRenderPlayer extends RenderLivingBase<AbstractClientP
     @Shadow
     public abstract ModelPlayer getMainModel();
 
-    public void clear(){
+    @Unique
+    private void clear(){
         this.mainHand = null;
         this.offHand = null;
     }

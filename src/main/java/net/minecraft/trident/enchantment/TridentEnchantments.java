@@ -8,11 +8,15 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.trident.Trident;
+import net.minecraft.trident.compat.oe.OceanicExpanse;
 import net.minecraft.trident.item.ITrident;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.List;
 
@@ -24,7 +28,7 @@ import java.util.List;
 public class TridentEnchantments {
 
     public static final EnumEnchantmentType TRIDENT = EnumHelper.addEnchantmentType("TRIDENT",
-            (item -> item instanceof ITrident));
+            (item -> item instanceof ITrident && ((ITrident)item).canApplyTridentEnchantment()));
 
     public static final List<Enchantment> ENCHANTMENTS = Lists.newArrayList();
 
@@ -65,7 +69,14 @@ public class TridentEnchantments {
     }
 
     public static int getRiptideModifier(ItemStack stack) {
-        return EnchantmentHelper.getEnchantmentLevel(RIPTIDE, stack);
+        int level = EnchantmentHelper.getEnchantmentLevel(RIPTIDE, stack);
+
+        if (level == 0 && Loader.isModLoaded("oe")) {
+            Enchantment riptide = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(OceanicExpanse.MODID, "riptide"));
+            level = EnchantmentHelper.getEnchantmentLevel(riptide, stack);
+        }
+
+        return level;
     }
 
     public static boolean hasChanneling(ItemStack stack) {

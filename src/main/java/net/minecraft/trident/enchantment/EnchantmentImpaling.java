@@ -9,18 +9,18 @@ import net.minecraft.inventory.EntityEquipmentSlot;
  */
 public class EnchantmentImpaling extends Enchantment {
 
-   public EnchantmentImpaling(Enchantment.Rarity rarityIn, EntityEquipmentSlot... slots) {
-      super(rarityIn, TridentEnchantments.TRIDENT, slots);
+   public EnchantmentImpaling(Enchantment.Rarity rarity, EntityEquipmentSlot... slots) {
+      super(rarity, TridentEnchantments.TRIDENT, slots);
    }
 
    @Override
-   public int getMinEnchantability(int enchantmentLevel) {
-      return 1 + (enchantmentLevel - 1) * 8;
+   public int getMinEnchantability(int level) {
+      return 1 + (level - 1) * 8;
    }
 
    @Override
-   public int getMaxEnchantability(int enchantmentLevel) {
-      return this.getMinEnchantability(enchantmentLevel) + 20;
+   public int getMaxEnchantability(int level) {
+      return this.getMinEnchantability(level) + 20;
    }
 
    @Override

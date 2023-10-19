@@ -1,6 +1,8 @@
 package net.minecraft.trident.common;
 
 import net.minecraft.item.Item;
+import net.minecraft.trident.compat.oe.OceanicExpanse;
+import net.minecraft.trident.compat.weather.WeatherRiptide;
 import net.minecraft.trident.crafting.TridentRecipes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
@@ -17,7 +19,9 @@ import net.minecraftforge.oredict.OreDictionary;
 public class CommonProxy {
 
     public void preInit(final FMLPreInitializationEvent event) {
-
+        if (Loader.isModLoaded("oe")) {
+            OceanicExpanse.init();
+        }
     }
 
     public void init(final FMLInitializationEvent event) {
@@ -28,7 +32,9 @@ public class CommonProxy {
     }
 
     public void postInit(final FMLPostInitializationEvent event) {
-
+        if (Loader.isModLoaded("weather2")) {
+            WeatherRiptide.init();
+        }
     }
 
     private static void registerOre(String modid) {

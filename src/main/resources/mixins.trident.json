@@ -6,8 +6,7 @@
     "MixinEntityLivingBase",
     "MixinEntityArrow",
     "MixinEntityVillager",
-    "MixinItemTideTrident",
-    "MixinModularWarfare"
+    "MixinItemTideTrident"
   ],
   "client": [
     "MixinRenderItem",

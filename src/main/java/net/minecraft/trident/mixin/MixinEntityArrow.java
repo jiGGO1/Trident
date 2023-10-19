@@ -47,8 +47,8 @@ public abstract class MixinEntityArrow extends Entity {
     @Shadow
     private int ticksInAir;
 
-    public MixinEntityArrow(World worldIn) {
-        super(worldIn);
+    public MixinEntityArrow(World world) {
+        super(world);
     }
 
     @Inject(method = "onUpdate()V", at = @At(value = "HEAD"), cancellable = true)
@@ -134,8 +134,9 @@ public abstract class MixinEntityArrow extends Entity {
                 } else {
                     this.rotationYaw = (float)(MathHelper.atan2(this.motionX, this.motionZ) * (double)(180F / (float)Math.PI));
                 }
-                for (; this.rotationPitch - this.prevRotationPitch < -180.0F; this.prevRotationPitch -= 360.0F) {
+                while (this.rotationPitch - this.prevRotationPitch < -180.0F) {
                     this.rotationPitch = (float) (MathHelper.atan2(this.motionY, (double) value) * (180D / Math.PI));
+                    this.prevRotationPitch -= 360.0F;
                 }
                 while (this.rotationPitch - this.prevRotationPitch >= 180.0F) {
                     this.prevRotationPitch += 360.0F;
@@ -152,8 +153,8 @@ public abstract class MixinEntityArrow extends Entity {
                 float gravity = 0.05F;
                 if (this.isInWater()) {
                     for (int i = 0; i < 4; ++i) {
-                        float f3 = 0.25F;
-                        this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * f3, this.posY - this.motionY * f3, this.posZ - this.motionZ * f3, this.motionX, this.motionY, this.motionZ);
+                        float range = 0.25F;
+                        this.world.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * range, this.posY - this.motionY * range, this.posZ - this.motionZ * range, this.motionX, this.motionY, this.motionZ);
                     }
                     drag = trident.getWaterDrag();
                 }

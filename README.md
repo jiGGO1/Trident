@@ -1,1 +1,1 @@
-# Trident
+# Trident [![](http://cf.way2muchnoise.eu/full_469262_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/trident-mod)

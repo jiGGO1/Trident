@@ -6,11 +6,14 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@SideOnly(Side.CLIENT)
 public class ArmPoseAdapter extends TypeAdapter<ModelBiped.ArmPose> {
 
     private final Map<String, ModelBiped.ArmPose> nameToConstant = new HashMap<>();

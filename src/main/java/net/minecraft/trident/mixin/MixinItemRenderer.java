@@ -45,19 +45,19 @@ public abstract class MixinItemRenderer {
             GlStateManager.rotate(-55.0F, 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate((float)offset * 35.3F, 0.0F, 1.0F, 0.0F);
             GlStateManager.rotate((float)offset * -9.785F, 0.0F, 0.0F, 1.0F);
-            float f5 = (float)stack.getMaxItemUseDuration() - ((float)this.mc.player.getItemInUseCount() - partialTicks + 1.0F);
-            float f7 = f5 / 10.0F;
-            if (f7 > 1.0F) {
-                f7 = 1.0F;
+            float time = (float)stack.getMaxItemUseDuration() - ((float)this.mc.player.getItemInUseCount() - partialTicks + 1.0F);
+            float ratio = time / 10.0F;
+            if (ratio > 1.0F) {
+                ratio = 1.0F;
             }
-            if (f7 > 0.1F) {
-                float f9 = MathHelper.sin((f5 - 0.1F) * 1.3F);
-                float f2 = f7 - 0.1F;
-                float f3 = f9 * f2;
-                GlStateManager.translate(f3 * 0.0F, f3 * 0.004F, f3 * 0.0F);
+            if (ratio > 0.1F) {
+                float waveCycle = MathHelper.sin((time - 0.1F) * 1.3F);
+                float adjustedUseRatio = ratio - 0.1F;
+                float factor = waveCycle * adjustedUseRatio;
+                GlStateManager.translate(factor * 0.0F, factor * 0.004F, factor * 0.0F);
             }
-            GlStateManager.translate(0.0F, 0.0F, f7 * 0.2F);
-            GlStateManager.scale(1.0F, 1.0F, 1.0F + f7 * 0.2F);
+            GlStateManager.translate(0.0F, 0.0F, ratio * 0.2F);
+            GlStateManager.scale(1.0F, 1.0F, 1.0F + ratio * 0.2F);
             GlStateManager.rotate((float)offset * 45.0F, 0.0F, -1.0F, 0.0F);
         }
     }

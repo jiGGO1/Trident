@@ -25,6 +25,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -33,6 +34,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * @author ji_GGO
  * @date 2022/11/26
  */
+@Pseudo
 @Mixin(ItemTideTrident.class)
 public class MixinItemTideTrident extends Item implements ITrident {
 
@@ -76,8 +78,8 @@ public class MixinItemTideTrident extends Item implements ITrident {
     }
 
     @Override
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase living) {
-        if ((double)state.getBlockHardness(worldIn, pos) != 0.0D) {
+    public boolean onBlockDestroyed(ItemStack stack, World world, IBlockState state, BlockPos pos, EntityLivingBase living) {
+        if ((double)state.getBlockHardness(world, pos) != 0.0D) {
             stack.damageItem(2, living);
         }
         return true;
@@ -85,14 +87,14 @@ public class MixinItemTideTrident extends Item implements ITrident {
 
     @Override
     public Multimap<String, AttributeModifier> getItemAttributeModifiers(EntityEquipmentSlot slot) {
-        Multimap<String, AttributeModifier> multimap = super.getItemAttributeModifiers(slot);
+        Multimap<String, AttributeModifier> attributes = super.getItemAttributeModifiers(slot);
 
         if (slot == EntityEquipmentSlot.MAINHAND) {
-            multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 12.0D, 0));
-            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -2.9F, 0));
+            attributes.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 12.0D, 0));
+            attributes.put(SharedMonsterAttributes.ATTACK_SPEED.getName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", -2.9F, 0));
         }
 
-        return multimap;
+        return attributes;
     }
 
     @Override

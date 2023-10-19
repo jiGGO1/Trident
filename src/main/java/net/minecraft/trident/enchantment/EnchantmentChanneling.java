@@ -9,17 +9,17 @@ import net.minecraft.inventory.EntityEquipmentSlot;
  */
 public class EnchantmentChanneling extends Enchantment {
 
-    public EnchantmentChanneling(Enchantment.Rarity rarityIn, EntityEquipmentSlot... slots) {
-        super(rarityIn, TridentEnchantments.TRIDENT, slots);
+    public EnchantmentChanneling(Enchantment.Rarity rarity, EntityEquipmentSlot... slots) {
+        super(rarity, TridentEnchantments.TRIDENT, slots);
     }
 
     @Override
-    public int getMinEnchantability(int enchantmentLevel) {
+    public int getMinEnchantability(int level) {
         return 25;
     }
 
     @Override
-    public int getMaxEnchantability(int enchantmentLevel) {
+    public int getMaxEnchantability(int level) {
         return 50;
     }
 

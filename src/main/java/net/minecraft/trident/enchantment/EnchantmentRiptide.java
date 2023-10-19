@@ -14,12 +14,12 @@ public class EnchantmentRiptide extends Enchantment {
    }
 
    @Override
-   public int getMinEnchantability(int enchantmentLevel) {
-      return 10 + enchantmentLevel * 7;
+   public int getMinEnchantability(int level) {
+      return 10 + level * 7;
    }
 
    @Override
-   public int getMaxEnchantability(int enchantmentLevel) {
+   public int getMaxEnchantability(int level) {
       return 50;
    }
 
